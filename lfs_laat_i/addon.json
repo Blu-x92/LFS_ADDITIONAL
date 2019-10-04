@@ -1,0 +1,10 @@
+{
+	"title"		: "[LFS] LAAT/i Republic Gunship",
+	"type"		: "vehicle",
+	"tags"		: [ "fun", "realism" ],
+	"ignore"	: [
+		"*.psd",
+		"*.vcproj",
+		"*.svn*"
+	]
+}

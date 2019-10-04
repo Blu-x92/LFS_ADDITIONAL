@@ -1,0 +1,24 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "valk/h3/unsc/computer/monitor_screen_glass_d"
+	"$bumpmap" "null-bumpmap"
+	"$AmbientOcclusion" "1"
+	"$color2" "[.5 .5 .5]"
+
+	"$translucent" "1"
+	
+	"$phong" "1"
+	"$phongboost" "1"
+	"$PhongExponent" "10"
+	"$phongalbedotint" "1"
+	"$phongfresnelranges" "[3 5 7]"
+	"$phongexponenttexture" "valk/h3/unsc/barrel/phongexp255"
+
+
+	"$detail" "valk/h3/unsc/barricade/masterchief_detail"
+	"$detailscale" 10
+	"$detailblendfactor" .5
+	"$detailblendmode" 0
+
+
+}

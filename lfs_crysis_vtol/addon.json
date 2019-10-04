@@ -1,0 +1,10 @@
+{
+	"title"		: "[LFS] MV-24 VTOL (crysis vtol)",
+	"type"		: "vehicle",
+	"tags"		: [ "fun", "realism" ],
+	"ignore"	: [
+		"*.psd",
+		"*.vcproj",
+		"*.svn*"
+	]
+}

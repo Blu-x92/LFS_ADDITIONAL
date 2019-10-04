@@ -1,0 +1,7 @@
+"Unlitgeneric"
+{
+	"$basetexture" "valk/crysis/vehicles/vtol/vtol_glass_d"
+	"$color2" "[1 0 0]"
+	"$AmbientOcclusion" "1"
+
+}

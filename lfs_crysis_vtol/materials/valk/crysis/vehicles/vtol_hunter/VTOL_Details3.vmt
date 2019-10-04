@@ -1,0 +1,16 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "valk/crysis/vehicles/VTOL/VTOL_Details3_d"
+	"$bumpmap" "valk/Crysis/Vehicles/VTOL/VTOL_Details3_n"
+	"$AmbientOcclusion" "1"
+	"$color2" "[.8 .8 .8]"
+
+	"$phong" "1"
+	"$phongboost" "1"
+	"$PhongExponent" "2"
+	"$phongalbedotint" "1"
+	"$phongfresnelranges" "[3 5 7]"
+	"$phongexponenttexture" "valk/crysis/vehicles/VTOL/phongexp255"
+
+
+}
