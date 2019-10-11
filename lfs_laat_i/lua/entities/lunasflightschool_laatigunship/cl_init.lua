@@ -49,7 +49,18 @@ function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 		
 		if Muzzle then
 			local Pos,Ang = LocalToWorld( Vector(0,20,-45), Angle(270,0,-90), Muzzle.Pos, Muzzle.Ang )
-			--view.angles = Ang
+
+			local fwd1 = ply:EyeAngles():Forward()
+			local fwd2 = Ang:Forward()
+			
+			local Zoom = (fwd1 - fwd2):Length() < 0.7 and (ply:KeyDown( IN_ATTACK2 ) or ply:KeyDown( IN_ZOOM )) or false
+			local Rate = FrameTime() * 5
+			
+			self.InterPoL = isnumber( self.InterPoL ) and self.InterPoL + math.Clamp((Zoom and 1 or 0) - self.InterPoL,-Rate,Rate) or 0
+			
+			view.angles = (fwd1 * (1 - self.InterPoL) + fwd2 * self.InterPoL):Angle()
+			view.fov = 75 - 30 * self.InterPoL
+			
 			view.origin = Pos
 			view.drawviewer = false
 		end
@@ -60,7 +71,18 @@ function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 		
 		if Muzzle then
 			local Pos,Ang = LocalToWorld( Vector(0,20,-45), Angle(270,0,-90), Muzzle.Pos, Muzzle.Ang )
-			--view.angles = Ang
+			
+			local fwd1 = ply:EyeAngles():Forward()
+			local fwd2 = Ang:Forward()
+			
+			local Zoom = (fwd1 - fwd2):Length() < 0.7 and (ply:KeyDown( IN_ATTACK2 ) or ply:KeyDown( IN_ZOOM )) or false
+			local Rate = FrameTime() * 5
+			
+			self.InterPoR = isnumber( self.InterPoR ) and self.InterPoR + math.Clamp((Zoom and 1 or 0) - self.InterPoR,-Rate,Rate) or 0
+			
+			view.angles = (fwd1 * (1 - self.InterPoR) + fwd2 * self.InterPoR):Angle()
+			view.fov = 75 - 30 * self.InterPoR
+			
 			view.origin = Pos
 			view.drawviewer = false
 		end

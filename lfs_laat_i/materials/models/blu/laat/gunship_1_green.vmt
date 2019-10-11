@@ -1,7 +1,7 @@
 "VertexLitGeneric"
 {
-	"$basetexture" "models/ish/starwars/laat/gunship_1_green"
-	"$bumpmap"	"models/ish/starwars/laat/gunship_1_n"
+	"$basetexture" "models/blu/laat/gunship_1_green"
+	"$bumpmap"	"models/blu/laat/gunship_1_n"
 	"$blendtintbybasealpha"	1
 
 	$halflambert 1
@@ -10,13 +10,13 @@
 	$Normalmapalphaenvmapmask 1	
 
 
-	"$detail" "models/ish/starwars/laat/details/detail_metal"
+	"$detail" "models/blu/laat/details/detail_metal"
 	"$detailscale"		"13"
 	"$detailblendfactor"		"1"	
 
     $phong 1
 	// $phongexponent 7
-	$phongexponenttexture "models/ish/starwars/laat/details/halosp"
+	$phongexponenttexture "models/blu/laat/details/halosp"
 	$phongboost	1
 	$phongalbedotint 1
 	$phongfresnelranges	"[0.8 0.8 0.8]"

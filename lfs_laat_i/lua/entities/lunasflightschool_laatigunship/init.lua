@@ -32,7 +32,7 @@ function ENT:RunOnSpawn()
 		local Muzzle = self:GetAttachment( ID )
 		
 		if Muzzle then
-			local Pos,Ang = LocalToWorld( Vector(0,-10,-45), Angle(180,0,-90), Muzzle.Pos, Muzzle.Ang )
+			local Pos,Ang = LocalToWorld( Vector(0,-20,-55), Angle(180,0,-90), Muzzle.Pos, Muzzle.Ang )
 			
 			BallTurretPod:SetParent( NULL )
 			BallTurretPod:SetPos( Pos )
@@ -49,7 +49,7 @@ function ENT:RunOnSpawn()
 		local Muzzle = self:GetAttachment( ID )
 		
 		if Muzzle then
-			local Pos,Ang = LocalToWorld( Vector(0,-10,-45), Angle(180,0,-90), Muzzle.Pos, Muzzle.Ang )
+			local Pos,Ang = LocalToWorld( Vector(0,-20,-55), Angle(180,0,-90), Muzzle.Pos, Muzzle.Ang )
 			
 			BallTurretPod:SetParent( NULL )
 			BallTurretPod:SetPos( Pos )

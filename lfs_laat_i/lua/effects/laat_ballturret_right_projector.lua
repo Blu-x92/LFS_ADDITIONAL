@@ -32,7 +32,7 @@ function EFFECT:Render()
 	local Muzzle = self.Entity:GetAttachment( self.ID )
 	
 	local Dir = Muzzle.Ang:Up()
-	local StartPos = Muzzle.Pos + Dir * 10
+	local StartPos = Muzzle.Pos + Dir * 14
 	local Trace = util.TraceLine( { start = StartPos, endpos = StartPos + Dir * 50000, filter = self } )
 	local EndPos = Trace.HitPos
 	

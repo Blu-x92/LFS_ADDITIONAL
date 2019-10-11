@@ -26,9 +26,9 @@ ENT.MaxHealth = 4000
 ENT.MaxPrimaryAmmo = 800
 ENT.MaxSecondaryAmmo = 8
 
-ENT.MaxTurnPitch = 80
-ENT.MaxTurnYaw = 80
-ENT.MaxTurnRoll = 80
+ENT.MaxTurnPitch = 70
+ENT.MaxTurnYaw = 70
+ENT.MaxTurnRoll = 70
 
 ENT.PitchDamping = 2
 ENT.YawDamping = 2

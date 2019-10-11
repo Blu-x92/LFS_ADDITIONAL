@@ -1,0 +1,12 @@
+VertexLitGeneric
+{
+	$basetexture "models/blu/laat/bf2_fuselage"	
+	$bumpmap    "models/blu/laat/bf2_fuselage_nm"
+	$envmap "env_cubemap"	
+	$envmaptint "[.1 .1 .1]"
+
+	$phong 			1
+	$phongexponent 		10
+	$phongboost	 	2
+	$phongfresnelranges	"[0 0.5 1]"
+}
