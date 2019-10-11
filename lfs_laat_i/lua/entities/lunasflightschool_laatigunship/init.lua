@@ -455,25 +455,25 @@ function ENT:WingTurretsFire( Driver, Pod )
 			filter = self
 		} )
 		self:SetWingTurretTarget( TracePlane.HitPos )
+		
+		local DesEndPos = TracePlane.HitPos
+		local DesStartPos = Vector(-172.97,334.04,93.25)
+		for i = -1,1,2 do
+			local StartPos = self:LocalToWorld( DesStartPos * Vector(1,i,1) )
+			
+			local Trace = util.TraceLine( { start = StartPos, endpos = DesEndPos} )
+			local EndPos = Trace.HitPos
+			
+			if self.Entity:WorldToLocal( EndPos ).z < 0 then
+				DesStartPos = Vector(-172.97,334.04,93.25)
+			else
+				DesStartPos = Vector(-174.79,350.05,125.98)
+			end
+			
+			self:BallturretDamage( Trace.Entity, Driver, EndPos, (EndPos - StartPos):GetNormalized() )
+		end
 	end
 	self:SetWingTurretFire( KeyAttack )
-	
-	local DesEndPos = self:GetWingTurretTarget()
-	local DesStartPos = Vector(-172.97,334.04,93.25)
-	for i = -1,1,2 do
-		local StartPos = self:LocalToWorld( DesStartPos * Vector(1,i,1) )
-		
-		local Trace = util.TraceLine( { start = StartPos, endpos = DesEndPos} )
-		local EndPos = Trace.HitPos
-		
-		if self.Entity:WorldToLocal( EndPos ).z < 0 then
-			DesStartPos = Vector(-172.97,334.04,93.25)
-		else
-			DesStartPos = Vector(-174.79,350.05,125.98)
-		end
-		
-		self:BallturretDamage( Trace.Entity, Driver, EndPos, (EndPos - StartPos):GetNormalized() )
-	end
 end
 
 function ENT:BallturretDamage( target, attacker, HitPos, HitDir )
