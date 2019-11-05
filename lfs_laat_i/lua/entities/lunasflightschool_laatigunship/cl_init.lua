@@ -243,14 +243,14 @@ function ENT:CalcEngineSound( RPM, Pitch, Doppler )
 		if not OnGround then
 			if self:CanSound() then
 				self:EmitSound( "LAATi_TAKEOFF" )
-				self:DelayNextSound( 5 )
+				self:DelayNextSound( 3 )
 				self:DelayNextSound2( 1.5 )
 			end
 		else
 			if self:CanSound2() then
 				self:EmitSound( "LAATi_LANDING" )
 				self:DelayNextSound( 1.5 )
-				self:DelayNextSound2( 5 )
+				self:DelayNextSound2( 3 )
 			end
 		end
 	end
