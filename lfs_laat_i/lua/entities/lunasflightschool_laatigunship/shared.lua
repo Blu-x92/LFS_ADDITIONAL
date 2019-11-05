@@ -64,6 +64,8 @@ function ENT:AddDataTables()
 	self:NetworkVar( "Bool",19, "BTLFire" )
 	self:NetworkVar( "Bool",20, "BTRFire" )
 	self:NetworkVar( "Bool",21, "RearHatch" )
+	self:NetworkVar( "Bool",22, "GXHairRG" )
+	self:NetworkVar( "Bool",23, "GXHairWT" )
 end
 
 sound.Add( {

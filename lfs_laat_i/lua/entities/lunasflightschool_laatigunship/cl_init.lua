@@ -5,6 +5,69 @@ include("shared.lua")
 function ENT:Initialize()
 end
 
+local function DrawCircle( X, Y, radius )
+	local segmentdist = 360 / ( 2 * math.pi * radius / 2 )
+	
+	for a = 0, 360, segmentdist do
+		surface.DrawLine( X + math.cos( math.rad( a ) ) * radius, Y - math.sin( math.rad( a ) ) * radius, X + math.cos( math.rad( a + segmentdist ) ) * radius, Y - math.sin( math.rad( a + segmentdist ) ) * radius )
+		
+		surface.DrawLine( X + math.cos( math.rad( a ) ) * radius, Y - math.sin( math.rad( a ) ) * radius, X + math.cos( math.rad( a + segmentdist ) ) * radius, Y - math.sin( math.rad( a + segmentdist ) ) * radius )
+	end
+end
+
+local zoom_mat = Material( "vgui/zoom" )
+
+function ENT:LFSHudPaintPassenger( X, Y, ply )
+	if ply ~= self:GetGunner() then return end
+
+	local EyeAngles = ply:EyeAngles()
+	
+	local RearGunActive = self:GetGXHairRG()
+	local WingTurretActive = self:GetGXHairWT()
+
+	local ID = self:LookupAttachment( "muzzle_reargun" )
+	local Muzzle = self:GetAttachment( ID )
+
+	local X = ScrW() * 0.5
+	local Y = ScrH() * 0.5
+	
+	if RearGunActive and Muzzle then
+		local Pos = Muzzle.Pos
+		local Dir = Muzzle.Ang:Up()
+
+		local trace = util.TraceLine( {
+			start = Pos,
+			endpos = Pos + Dir * 50000,
+			filter = self:GetCrosshairFilterEnts()
+		} )
+
+		local hitpos = trace.HitPos:ToScreen()
+
+		X = hitpos.x
+		Y = hitpos.y
+	end
+	
+	if RearGunActive or WingTurretActive then
+		surface.SetDrawColor( 255, 255, 255, 255 )
+	else
+		surface.SetDrawColor( 255, 0, 0, 255 )
+	end
+	
+	DrawCircle( X, Y, 10 )
+	surface.DrawLine( X + 10, Y, X + 20, Y ) 
+	surface.DrawLine( X - 10, Y, X - 20, Y ) 
+	surface.DrawLine( X, Y + 10, X, Y + 20 ) 
+	surface.DrawLine( X, Y - 10, X, Y - 20 ) 
+	
+	-- shadow
+	surface.SetDrawColor( 0, 0, 0, 80 )
+	DrawCircle( X + 1, Y + 1, 10 )
+	surface.DrawLine( X + 11, Y + 1, X + 21, Y + 1 ) 
+	surface.DrawLine( X - 9, Y + 1, X - 16, Y + 1 ) 
+	surface.DrawLine( X + 1, Y + 11, X + 1, Y + 21 ) 
+	surface.DrawLine( X + 1, Y - 19, X + 1, Y - 16 ) 
+end
+
 function ENT:LFSCalcViewFirstPerson( view, ply )
 	return self:LFSCalcViewThirdPerson( view, ply, true )
 end
@@ -137,6 +200,28 @@ function ENT:ExhaustFX()
 	end
 end
 
+function ENT:CanSound()
+	self.NextSound = self.NextSound or 0
+	return self.NextSound < CurTime()
+end
+
+function ENT:CanSound2()
+	self.NextSound2 = self.NextSound2 or 0
+	return self.NextSound2 < CurTime()
+end
+
+function ENT:DelayNextSound( fDelay )
+	if not isnumber( fDelay ) then return end
+	
+	self.NextSound = CurTime() + fDelay
+end
+
+function ENT:DelayNextSound2( fDelay )
+	if not isnumber( fDelay ) then return end
+	
+	self.NextSound2 = CurTime() + fDelay
+end
+
 function ENT:CalcEngineSound( RPM, Pitch, Doppler )
 	if self.ENG then
 		self.ENG:ChangePitch(  math.Clamp(math.Clamp(  80 + Pitch * 25, 50,255) + Doppler,0,255) )
@@ -156,9 +241,17 @@ function ENT:CalcEngineSound( RPM, Pitch, Doppler )
 	if OnGround ~= self.OldGroundTouching then
 		self.OldGroundTouching = OnGround
 		if not OnGround then
-			self:EmitSound( "LAATi_TAKEOFF" )
+			if self:CanSound() then
+				self:EmitSound( "LAATi_TAKEOFF" )
+				self:DelayNextSound( 5 )
+				self:DelayNextSound2( 1.5 )
+			end
 		else
-			self:EmitSound( "LAATi_LANDING" )
+			if self:CanSound2() then
+				self:EmitSound( "LAATi_LANDING" )
+				self:DelayNextSound( 1.5 )
+				self:DelayNextSound2( 5 )
+			end
 		end
 	end
 end

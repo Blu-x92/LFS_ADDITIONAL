@@ -86,13 +86,7 @@ function ENT:PrimaryAttack()
 	self.MirrorPrimary = not self.MirrorPrimary
 	
 	if not isnumber( self.frontgunYaw ) then return end
-	
-	if math.abs( self.frontgunYaw ) > 90 then
-		self:FireRearGun()
-		
-		return
-	end
-	
+
 	if self.frontgunYaw > 5 and self.MirrorPrimary then return end
 	if self.frontgunYaw < -5 and not self.MirrorPrimary then return end
 	
@@ -120,7 +114,6 @@ function ENT:PrimaryAttack()
 	
 	self:TakePrimaryAmmo()
 end
-
 
 function ENT:SecondaryAttack()
 	if self:GetAI() then return end
@@ -177,15 +170,26 @@ function ENT:SecondaryAttack()
 	end
 end
 
+function ENT:SetNextAltPrimary( delay )
+	self.NextAltPrimary = CurTime() + delay
+end
+
+function ENT:CanAltPrimaryAttack()
+	self.NextAltPrimary = self.NextAltPrimary or 0
+	return self.NextAltPrimary < CurTime()
+end
+
 function ENT:FireRearGun()
+	if not self:CanAltPrimaryAttack() then return end
+	
 	local ID = self:LookupAttachment( "muzzle_reargun" )
 	local Muzzle = self:GetAttachment( ID )
 	
 	if not Muzzle then return end
 	
-	self:SetNextPrimary( 0.35 )
-	
 	self:EmitSound( "LAATi_FIRE" )
+	
+	self:SetNextAltPrimary( 0.3 )
 	
 	local bullet = {}
 	bullet.Num 	= 1
@@ -197,14 +201,12 @@ function ENT:FireRearGun()
 	bullet.Force	= 100
 	bullet.HullSize 	= 20
 	bullet.Damage	= 125
-	bullet.Attacker 	= self:GetDriver()
+	bullet.Attacker 	= self:GetGunner()
 	bullet.AmmoType = "Pistol"
 	bullet.Callback = function(att, tr, dmginfo)
 		dmginfo:SetDamageType(DMG_AIRBOAT)
 	end
 	self:FireBullets( bullet )
-	
-	self:TakePrimaryAmmo()
 end
 
 function ENT:MainGunPoser( EyeAngles )
@@ -223,14 +225,6 @@ function ENT:MainGunPoser( EyeAngles )
 	
 	self:SetPoseParameter("frontgun_pitch", -AimAngles.p )
 	self:SetPoseParameter("frontgun_yaw", -AimAngles.y )
-	
-	
-	local Pos,Ang = WorldToLocal( Vector(0,0,0), (TracePlane.HitPos - self:LocalToWorld( Vector(-436,0,158.5)) ):GetNormalized():Angle(), Vector(0,0,0), self:LocalToWorldAngles( Angle(0,180,0) ) )
-	
-	if math.abs( self.frontgunYaw ) < 90 then Ang = Angle(30,0,0) end
-	
-	self:SetPoseParameter("reargun_pitch", -Ang.p )
-	self:SetPoseParameter("reargun_yaw", -Ang.y )
 end
 
 function ENT:OnGravityModeChanged( b )
@@ -246,8 +240,6 @@ function ENT:OnKeyThrottle( bPressed )
 end
 
 function ENT:OnEngineStarted()
-	--self:EmitSound( "lfs/crysis_vtol/engine_start.wav" )
-	
 	local RotorWash = ents.Create( "env_rotorwash_emitter" )
 	
 	if IsValid( RotorWash ) then
@@ -383,7 +375,7 @@ function ENT:OnTick()
 		end
 	end
 	
-	self:WingTurretsFire( self:GetGunner(), self:GetGunnerSeat() )
+	self:GunnerWeapons( self:GetGunner(), self:GetGunnerSeat() )
 end
 
 function ENT:BallTurretL( Driver, Pod )
@@ -438,22 +430,40 @@ function ENT:BallTurretR( Driver, Pod )
 	end
 end
 
-function ENT:WingTurretsFire( Driver, Pod )
-	if not IsValid( Pod ) or not IsValid( Driver ) then self:SetWingTurretFire( false ) return end
-	
+function ENT:GunnerWeapons( Driver, Pod )
+	if not IsValid( Pod ) or not IsValid( Driver ) then 
+		self:SetWingTurretFire( false ) 
+		
+		return
+	else
+		Driver:CrosshairDisable()
+	end
+
 	local EyeAngles = Pod:WorldToLocalAngles( Driver:EyeAngles() )
 	
 	local Forward = self:GetForward()
 
-	local KeyAttack = Driver:KeyDown( IN_ATTACK ) and math.abs( self:WorldToLocalAngles( EyeAngles ).y) < 55
+	local KeyAttack = Driver:KeyDown( IN_ATTACK )
 
-	if KeyAttack then
-		local startpos = self:GetRotorPos() + EyeAngles:Up() * 250
-		local TracePlane = util.TraceLine( {
-			start = startpos,
-			endpos = (startpos + EyeAngles:Forward() * 50000),
-			filter = self
-		} )
+	local startpos = self:GetRotorPos() + EyeAngles:Up() * 250
+	local TracePlane = util.TraceLine( {
+		start = startpos,
+		endpos = (startpos + EyeAngles:Forward() * 50000),
+		filter = self
+	} )
+	
+	local AimAngYaw = math.abs( self:WorldToLocalAngles( EyeAngles ).y )
+	
+	local WingTurretActive = AimAngYaw < 55
+	local RearGunActive = AimAngYaw > 120
+	
+	local FireWingTurret = KeyAttack and WingTurretActive
+	local FireRearGun = KeyAttack and RearGunActive
+	
+	self:SetGXHairRG( RearGunActive )
+	self:SetGXHairWT( WingTurretActive )
+	
+	if FireWingTurret then
 		self:SetWingTurretTarget( TracePlane.HitPos )
 		
 		local DesEndPos = TracePlane.HitPos
@@ -473,7 +483,21 @@ function ENT:WingTurretsFire( Driver, Pod )
 			self:BallturretDamage( Trace.Entity, Driver, EndPos, (EndPos - StartPos):GetNormalized() )
 		end
 	end
-	self:SetWingTurretFire( KeyAttack )
+	self:SetWingTurretFire( FireWingTurret )
+
+	if RearGunActive then
+		local Pos,Ang = WorldToLocal( Vector(0,0,0), (TracePlane.HitPos - self:LocalToWorld( Vector(-400,0,158.5)) ):GetNormalized():Angle(), Vector(0,0,0), self:LocalToWorldAngles( Angle(0,180,0) ) )
+		
+		self:SetPoseParameter("reargun_pitch", -Ang.p )
+		self:SetPoseParameter("reargun_yaw", -Ang.y )
+	else
+		self:SetPoseParameter("reargun_pitch", -30 )
+		self:SetPoseParameter("reargun_yaw", 0 )
+	end
+	
+	if FireRearGun then
+		self:FireRearGun()
+	end
 end
 
 function ENT:BallturretDamage( target, attacker, HitPos, HitDir )
@@ -483,8 +507,7 @@ function ENT:BallturretDamage( target, attacker, HitPos, HitDir )
 		local dmginfo = DamageInfo()
 		dmginfo:SetDamage( 1000 * FrameTime() )
 		dmginfo:SetAttacker( attacker )
-		--dmginfo:SetDamageType( DMG_ENERGYBEAM )
-		dmginfo:SetDamageType( DMG_SHOCK )
+		dmginfo:SetDamageType( bit.bor( DMG_SHOCK, DMG_ENERGYBEAM ) )
 		dmginfo:SetInflictor( self ) 
 		dmginfo:SetDamagePosition( HitPos ) 
 		dmginfo:SetDamageForce( HitDir * 10000 ) 
