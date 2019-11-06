@@ -179,8 +179,10 @@ function ENT:CanAltPrimaryAttack()
 	return self.NextAltPrimary < CurTime()
 end
 
-function ENT:FireRearGun()
+function ENT:FireRearGun( TargetPos )
 	if not self:CanAltPrimaryAttack() then return end
+	
+	if not isvector( TargetPos ) then return end
 	
 	local ID = self:LookupAttachment( "muzzle_reargun" )
 	local Muzzle = self:GetAttachment( ID )
@@ -194,8 +196,8 @@ function ENT:FireRearGun()
 	local bullet = {}
 	bullet.Num 	= 1
 	bullet.Src 	= Muzzle.Pos
-	bullet.Dir 	= Muzzle.Ang:Up()
-	bullet.Spread 	= Vector( 0.04,  0.04, 0 )
+	bullet.Dir 	= (TargetPos - Muzzle.Pos):GetNormalized()
+	bullet.Spread 	= Vector( 0.02,  0.02, 0 )
 	bullet.Tracer	= 1
 	bullet.TracerName	= "lfs_laser_green"
 	bullet.Force	= 100
@@ -442,6 +444,7 @@ function ENT:GunnerWeapons( Driver, Pod )
 	local EyeAngles = Pod:WorldToLocalAngles( Driver:EyeAngles() )
 	
 	local Forward = self:GetForward()
+	local Back = -Forward
 
 	local KeyAttack = Driver:KeyDown( IN_ATTACK )
 
@@ -455,7 +458,7 @@ function ENT:GunnerWeapons( Driver, Pod )
 	local AimAngYaw = math.abs( self:WorldToLocalAngles( EyeAngles ).y )
 	
 	local WingTurretActive = AimAngYaw < 55
-	local RearGunActive = AimAngYaw > 120
+	local RearGunActive = math.deg( math.acos( math.Clamp( Back:Dot( EyeAngles:Forward() ) ,-1,1) ) ) < 35
 	
 	local FireWingTurret = KeyAttack and WingTurretActive
 	local FireRearGun = KeyAttack and RearGunActive
@@ -485,7 +488,7 @@ function ENT:GunnerWeapons( Driver, Pod )
 	end
 	self:SetWingTurretFire( FireWingTurret )
 
-	if RearGunActive then
+	if AimAngYaw > 120 then
 		local Pos,Ang = WorldToLocal( Vector(0,0,0), (TracePlane.HitPos - self:LocalToWorld( Vector(-400,0,158.5)) ):GetNormalized():Angle(), Vector(0,0,0), self:LocalToWorldAngles( Angle(0,180,0) ) )
 		
 		self:SetPoseParameter("reargun_pitch", -Ang.p )
@@ -496,7 +499,7 @@ function ENT:GunnerWeapons( Driver, Pod )
 	end
 	
 	if FireRearGun then
-		self:FireRearGun()
+		self:FireRearGun( TracePlane.HitPos )
 	end
 end
 
