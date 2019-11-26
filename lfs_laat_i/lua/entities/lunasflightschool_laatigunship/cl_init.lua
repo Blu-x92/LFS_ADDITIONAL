@@ -5,6 +5,21 @@ include("shared.lua")
 function ENT:Initialize()
 end
 
+function ENT:DamageFX()
+	local HP = self:GetHP()
+	if HP == 0 or HP > self:GetMaxHP() * 0.5 then return end
+	
+	self.nextDFX = self.nextDFX or 0
+	
+	if self.nextDFX < CurTime() then
+		self.nextDFX = CurTime() + 0.05
+		
+		local effectdata = EffectData()
+			effectdata:SetOrigin( self:LocalToWorld( Vector(-397.16,0,260.93) ) )
+		util.Effect( "lfs_blacksmoke", effectdata )
+	end
+end
+
 local function DrawCircle( X, Y, radius )
 	local segmentdist = 360 / ( 2 * math.pi * radius / 2 )
 	

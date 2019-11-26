@@ -24,7 +24,7 @@ ENT.SeatAng = Angle(0,-90,0)
 ENT.MaxHealth = 4000
 
 ENT.MaxPrimaryAmmo = 800
-ENT.MaxSecondaryAmmo = 8
+ENT.MaxSecondaryAmmo = 26
 
 ENT.MaxTurnPitch = 70
 ENT.MaxTurnYaw = 70
@@ -160,6 +160,8 @@ sound.Add( {
 } )
 
 hook.Add("CalcMainActivity", "!!!lfs_LAATi_passengeranims", function(ply)
+	if not ply.lfsGetPlane then return end
+	
 	local Ent = ply:lfsGetPlane()
 	
 	if not IsValid( Ent ) then return end
