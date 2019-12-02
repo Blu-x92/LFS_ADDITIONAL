@@ -125,7 +125,7 @@ function ENT:PrimaryAttack()
 	
 	if self.FireIndex > 4 then
 		self.FireIndex = 1
-		self:SetNextPrimary( 0.35 )
+		self:SetNextPrimary( 0.5 )
 	else
 		if self.FireIndex == 3 then
 			self:SetNextPrimary( 0.21)
@@ -139,7 +139,7 @@ function ENT:PrimaryAttack()
 	local Pos = FirePos[self.FireIndex].Pos
 	local Dir =  FirePos[self.FireIndex].Ang:Up()
 	
-	if math.deg( math.acos( math.Clamp( Dir:Dot( self.MainGunDir ) ,-1,1) ) ) < 15 then
+	if math.deg( math.acos( math.Clamp( Dir:Dot( self.MainGunDir ) ,-1,1) ) ) < 5 then
 		Dir = self.MainGunDir
 	end
 	
@@ -156,7 +156,11 @@ function ENT:PrimaryAttack()
 	bullet.Attacker 	= self:GetDriver()
 	bullet.AmmoType = "Pistol"
 	bullet.Callback = function(att, tr, dmginfo)
-		dmginfo:SetDamageType(DMG_AIRBOAT)
+		if tr.Entity.IsSimfphyscar then
+			dmginfo:SetDamageType(DMG_DIRECT)
+		else
+			dmginfo:SetDamageType(DMG_AIRBOAT)
+		end
 	end
 	self:FireBullets( bullet )
 	
@@ -178,7 +182,7 @@ function ENT:MainGunPoser( EyeAngles )
 	
 	local AimAngles = self:WorldToLocalAngles( (TracePlane.HitPos - self:LocalToWorld( Vector(265,0,100)) ):GetNormalized():Angle() )
 	
-	self:SetPoseParameter("frontgun_pitch", AimAngles.p )
+	self:SetPoseParameter("frontgun_pitch", math.Clamp(AimAngles.p,-5,5) )
 	self:SetPoseParameter("frontgun_yaw", AimAngles.y )
 end
 
