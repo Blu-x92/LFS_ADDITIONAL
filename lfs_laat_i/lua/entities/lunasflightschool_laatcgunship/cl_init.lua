@@ -54,6 +54,10 @@ end
 function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 	local Pod = ply:GetVehicle()
 
+	if ply == self:GetDriver() and not FirstPerson then
+		view.origin = view.origin + self:GetUp() * 100
+	end
+	
 	if ply == self:GetGunner() then
 		local radius = 800
 		radius = radius + radius * Pod:GetCameraDistance()
