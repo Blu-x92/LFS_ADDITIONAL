@@ -412,7 +412,7 @@ function ENT:OnTick()
 				
 				local Trace = util.TraceHull( {
 					start = MassCenter, 
-					endpos = MassCenter - Up * 160,
+					endpos = MassCenter - Up * 200,
 					
 					filter = function( ent ) 
 						if ent == self or ent == self:GetRearEnt() or ent:IsPlayer() or ent:IsNPC() or ent:IsVehicle() or GroupCollide[ ent:GetCollisionGroup() ] then
