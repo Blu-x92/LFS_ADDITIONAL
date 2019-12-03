@@ -1,3 +1,14 @@
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+
 ENT.Type            = "anim"
 DEFINE_BASECLASS( "lunasflightschool_basescript" )
 
@@ -22,7 +33,8 @@ ENT.GibModels = {
 
 ENT.RotorPos = Vector(265,0,175)
 
-ENT.MaxPrimaryAmmo = 600
+ENT.MaxPrimaryAmmo = 1000
+ENT.MaxSecondaryAmmo = 50
 
 ENT.AITEAM = 2
 
@@ -37,10 +49,16 @@ ENT.RotorPos = Vector(70,0,140)
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Entity",22, "RearEnt" )
+	
+	self:NetworkVar( "Entity",23, "TurretDriver" )
+	self:NetworkVar( "Entity",24, "TurretSeat" )
+	
 	self:NetworkVar( "Float",22, "Move" )
 
 	self:NetworkVar( "Bool",19, "IsMoving" )
 	self:NetworkVar( "Bool",20, "IsCarried" )
+	self:NetworkVar( "Bool",21, "FrontInRange" )
+	self:NetworkVar( "Bool",22, "RearInRange" )
 end
 
 sound.Add( {
@@ -50,4 +68,22 @@ sound.Add( {
 	level = 125,
 	pitch = {95, 105},
 	sound = "lfs/laatc_atte/fire.mp3"
+} )
+
+sound.Add( {
+	name = "LAATc_ATTE_CANNONFIRE",
+	channel = CHAN_WEAPON,
+	volume = 1.0,
+	level = 125,
+	pitch = {90, 110},
+	sound = "lfs/laatc_atte/fire_turret.mp3"
+} )
+
+sound.Add( {
+	name = "LAATc_ATTE_CANNONRELOAD",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = 90,
+	pitch = 100,
+	sound = "lfs/laatc_atte/overheat.mp3"
 } )

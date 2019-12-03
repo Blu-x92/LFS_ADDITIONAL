@@ -1,4 +1,13 @@
 --DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
+--DO NOT EDIT OR REUPLOAD THIS FILE
 
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "cl_init.lua" )
@@ -16,7 +25,7 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	return ent
 end
 
-function ENT:Initialize()
+function ENT:Initialize() -- overwriting initialize function is bad and a big nono, but in this special case we are just using the vehicle framework and not the actual planescript so it should be ok
 	self:SetModel( self.MDL )
 	
 	self:PhysicsInit( SOLID_VPHYSICS )
@@ -44,10 +53,9 @@ function ENT:Initialize()
 	
 	self:InitPod()
 
-	local ent = ents.Create( "prop_physics" )
+	local ent = ents.Create( "gmod_atte_rear" )
 	ent:SetPos( self:GetPos() )
 	ent:SetAngles( self:GetAngles() )
-	ent:SetModel( "models/blu/atte_rear.mdl" )
 	ent:Spawn()
 	ent:Activate()
 	ent:DeleteOnRemove( self )
@@ -79,8 +87,38 @@ function ENT:Initialize()
 	ballsocket:DeleteOnRemove( self )
 	ballsocket:DeleteOnRemove( ent )
 	
-	self:InitWheels()
 	self:RunOnSpawn()
+	self:InitWheels() -- im too lazy to call unfreeze and wake so i will just let initwheels do the job
+end
+
+function ENT:RunOnSpawn()
+	local TurretSeat = self:AddPassengerSeat( Vector(150,0,150), Angle(0,-90,0) )
+	
+	local ID = self:LookupAttachment( "driver_turret" )
+	local TSAttachment = self:GetAttachment( ID )
+	
+	if TSAttachment then
+		local Pos,Ang = LocalToWorld( Vector(0,-5,8), Angle(180,0,-55), TSAttachment.Pos, TSAttachment.Ang )
+		
+		TurretSeat:SetParent( NULL )
+		TurretSeat:SetPos( Pos )
+		TurretSeat:SetAngles( Ang )
+		TurretSeat:SetParent( self, ID )
+		self:SetTurretSeat( TurretSeat )
+	end
+
+	local GunnerSeat = self:AddPassengerSeat( Vector(150,0,150), Angle(0,-90,0) )
+	self:SetGunnerSeat( GunnerSeat )
+end
+
+function ENT:ApplyThrustVtol( PhysObj, vDirection, fForce ) -- kill vtol function
+end
+
+function ENT:ApplyThrust( PhysObj, vDirection, fForce ) -- kill thrust
+end
+
+function ENT:CalcFlightOverride( Pitch, Yaw, Roll, Stability ) -- kill planescript handling
+	return 0,0,0,0,0,0
 end
 
 function ENT:CreateAI()
@@ -98,8 +136,69 @@ end
 function ENT:OnLandingGearToggled( bOn )
 end
 
+function ENT:SetNextAltPrimary( delay )
+	self.NextAltPrimary = CurTime() + delay
+end
+
+function ENT:CanAltPrimaryAttack()
+	self.NextAltPrimary = self.NextAltPrimary or 0
+	return self.NextAltPrimary < CurTime() and self:GetAmmoPrimary() > 0
+end
+
+function ENT:FireRearGun()
+	local RearEnt = self:GetRearEnt()
+	
+	if not self:CanAltPrimaryAttack() or not IsValid( RearEnt ) then return end
+
+	self:SetNextAltPrimary( 0.3 )
+	
+	local ID1 = RearEnt:LookupAttachment( "muzzle_right" )
+	local ID2 = RearEnt:LookupAttachment( "muzzle_left" )
+
+	local Muzzle1 = RearEnt:GetAttachment( ID1 )
+	local Muzzle2 = RearEnt:GetAttachment( ID2 )
+	
+	if not Muzzle1 or not Muzzle2 then return end
+	
+	local FirePos = { [1] = Muzzle1, [2] = Muzzle2 }
+	
+	self.FireIndexRear = self.FireIndexRear and self.FireIndexRear + 1 or 1
+	
+	if self.FireIndexRear > 2 then
+		self.FireIndexRear = 1
+	end
+	
+	RearEnt:EmitSound( "LAATc_ATTE_FIRE" )
+
+	local Pos = FirePos[self.FireIndexRear].Pos
+	local Dir =  FirePos[self.FireIndexRear].Ang:Up()
+	
+	local bullet = {}
+	bullet.Num 	= 1
+	bullet.Src 	= Pos
+	bullet.Dir 	= Dir
+	bullet.Spread 	= Vector( 0.01,  0.01, 0 )
+	bullet.Tracer	= 1
+	bullet.TracerName	= "lfs_laser_green"
+	bullet.Force	= 100
+	bullet.HullSize 	= 22
+	bullet.Damage	= 150
+	bullet.Attacker 	= self:GetGunner()
+	bullet.AmmoType = "Pistol"
+	bullet.Callback = function(att, tr, dmginfo)
+		if tr.Entity.IsSimfphyscar then
+			dmginfo:SetDamageType(DMG_DIRECT)
+		else
+			dmginfo:SetDamageType(DMG_AIRBOAT)
+		end
+	end
+	RearEnt:FireBullets( bullet )
+	
+	self:TakePrimaryAmmo()
+end
 
 function ENT:PrimaryAttack()
+	if self:GetIsCarried() then return end
 	if not self:CanPrimaryAttack() or not self.MainGunDir then return end
 
 	local ID1 = self:LookupAttachment( "muzzle_right_up" )
@@ -128,9 +227,9 @@ function ENT:PrimaryAttack()
 		self:SetNextPrimary( 0.5 )
 	else
 		if self.FireIndex == 3 then
-			self:SetNextPrimary( 0.21)
+			self:SetNextPrimary( 0.2 )
 		else
-			self:SetNextPrimary( 0.1 )
+			self:SetNextPrimary( 0.08 )
 		end
 	end
 	
@@ -139,7 +238,7 @@ function ENT:PrimaryAttack()
 	local Pos = FirePos[self.FireIndex].Pos
 	local Dir =  FirePos[self.FireIndex].Ang:Up()
 	
-	if math.deg( math.acos( math.Clamp( Dir:Dot( self.MainGunDir ) ,-1,1) ) ) < 5 then
+	if math.deg( math.acos( math.Clamp( Dir:Dot( self.MainGunDir ) ,-1,1) ) ) < 8 then
 		Dir = self.MainGunDir
 	end
 	
@@ -167,6 +266,9 @@ function ENT:PrimaryAttack()
 	self:TakePrimaryAmmo()
 end
 
+function ENT:SecondaryAttack()
+end
+
 function ENT:MainGunPoser( EyeAngles )
 	
 	self.MainGunDir = EyeAngles:Forward()
@@ -184,6 +286,13 @@ function ENT:MainGunPoser( EyeAngles )
 	
 	self:SetPoseParameter("frontgun_pitch", math.Clamp(AimAngles.p,-5,5) )
 	self:SetPoseParameter("frontgun_yaw", AimAngles.y )
+
+	local ID = self:LookupAttachment( "muzzle_right_up" )
+	local Muzzle = self:GetAttachment( ID )
+	
+	if Muzzle then
+		self:SetFrontInRange( math.deg( math.acos( math.Clamp( Muzzle.Ang:Up():Dot( self.MainGunDir ) ,-1,1) ) ) < 8 )
+	end
 end
 
 local GroupCollide = {
@@ -196,6 +305,15 @@ local GroupCollide = {
 }
 
 function ENT:OnTick()
+	
+	local TurretPod = self:GetTurretSeat()
+	if IsValid( TurretPod ) then
+		local TurretDriver = TurretPod:GetDriver()
+		if TurretDriver ~= self:GetTurretDriver() then
+			self:SetTurretDriver( TurretDriver )
+		end
+	end
+	
 	if self:GetIsCarried() then 
 		for _, ent in pairs( {self,self:GetRearEnt()} ) do
 			if IsValid( ent ) then
@@ -203,6 +321,15 @@ function ENT:OnTick()
 				PObj:EnableGravity( false ) 
 			end
 		end
+		
+		self.sm_ppmg_pitch = 0
+		self.sm_ppmg_yaw = 180
+
+		self:SetPoseParameter("cannon_pitch", 0 )
+		self:SetPoseParameter("cannon_yaw", 180 )
+		
+		self:SetFrontInRange( false )
+		self:SetRearInRange( false )
 		
 		return
 	end
@@ -231,12 +358,18 @@ function ENT:OnTick()
 	local EyeAngles = Angle(0,0,0)
 	local KeyForward = false
 	local KeyBack = false
+	local KeyLeft = false
+	local KeyRight = false
+	
 	local Sprint = false
 	
 	if IsValid( Driver ) then
 		EyeAngles = Driver:EyeAngles()
 		KeyForward = Driver:lfsGetInput( "+THROTTLE" ) or self.IsTurnMove
 		KeyBack = Driver:lfsGetInput( "-THROTTLE" )
+		KeyLeft = Driver:lfsGetInput( "+ROLL" )
+		KeyRight = Driver:lfsGetInput( "-ROLL" ) 
+		
 		if KeyBack then
 			KeyForward = false
 		end
@@ -320,8 +453,8 @@ function ENT:OnTick()
 							else
 								self.StoredEyeAnglesATTE  = EyeAngles
 							end
-							
-							local NEWsmY = math.ApproachAngle( self.smY, Pod:WorldToLocalAngles( EyeAngles ).y, TurnRate )
+							local AddYaw = (KeyRight and 30 or 0) - (KeyLeft and 30 or 0)
+							local NEWsmY = math.ApproachAngle( self.smY, Pod:WorldToLocalAngles( EyeAngles + Angle(0,AddYaw,0) ).y, TurnRate )
 							
 							self.IsTurnMove = math.abs( NEWsmY - self.smY ) >= TurnRate * 0.99
 
@@ -353,6 +486,128 @@ function ENT:OnTick()
 		local Force = self:GetForward() * (self.smSpeed - VelL.x)
 
 		PObj:ApplyForceCenter( Force * Mass * FTtoTick )
+	end
+	
+	self:GunnerWeapons( self:GetRearEnt(), self:GetGunner(), self:GetGunnerSeat() )
+	self:Turret( self:GetTurretDriver(), TurretPod )
+end
+
+function ENT:Turret( Driver, Pod )
+	if not IsValid( Pod ) or not IsValid( Driver ) then 
+		return
+	end
+	
+	local EyeAngles = Pod:WorldToLocalAngles( Driver:EyeAngles() )
+	
+	local AimDir = EyeAngles:Forward()
+	
+	local KeyAttack = Driver:KeyDown( IN_ATTACK )
+	
+	local TurretPos = self:LocalToWorld( Vector(94.13,0,216.8) )
+	
+	local startpos = TurretPos + EyeAngles:Up() * 100
+	local TracePlane = util.TraceLine( {
+		start = startpos,
+		endpos = (startpos + AimDir * 50000),
+		filter = {self:GetRearEnt(),self}
+	} )
+
+	local Pos,Ang = WorldToLocal( Vector(0,0,0), (TracePlane.HitPos - TurretPos ):GetNormalized():Angle(), Vector(0,0,0),self:GetAngles() )
+	
+	local AimRate = 100 * FrameTime() 
+	
+	self.sm_ppmg_pitch = self.sm_ppmg_pitch and math.ApproachAngle( self.sm_ppmg_pitch, Ang.p, AimRate ) or 0
+	self.sm_ppmg_yaw = self.sm_ppmg_yaw and math.ApproachAngle( self.sm_ppmg_yaw, Ang.y, AimRate ) or 0
+	
+	local TargetAng = Angle(self.sm_ppmg_pitch,self.sm_ppmg_yaw,0)
+	TargetAng:Normalize() 
+	
+	self:SetPoseParameter("cannon_pitch", TargetAng.p )
+	self:SetPoseParameter("cannon_yaw", TargetAng.y )
+	
+	if KeyAttack then
+		self:FireTurret( Driver )
+	end
+	
+	if (self.cFireIndex or 0) > 0 and Driver:KeyDown( IN_RELOAD ) then
+		self.cFireIndex = 0
+		self:SetNextSecondary( 2 )
+		Pod:EmitSound("LAATc_ATTE_CANNONRELOAD")
+	end
+end
+
+function ENT:CanSecondaryAttack()
+	self.NextSecondary = self.NextSecondary or 0
+
+	return self.NextSecondary < CurTime() and self:GetAmmoSecondary() > 0
+end
+
+function ENT:FireTurret()
+	if not self:CanSecondaryAttack() then return end
+	
+	self:SetNextSecondary( 0.5 )
+	
+	self.cFireIndex = self.cFireIndex and self.cFireIndex + 1 or 1
+	if self.cFireIndex >= 3 then
+		self.cFireIndex = 0
+		self:SetNextSecondary( 2 )
+		self:GetTurretSeat():EmitSound("LAATc_ATTE_CANNONRELOAD")
+	end
+	
+	self:EmitSound( "LAATc_ATTE_CANNONFIRE" )
+	
+	local ID = self:LookupAttachment( "muzzle_cannon" )
+	local Muzzle = self:GetAttachment( ID )
+
+	if Muzzle then
+		local ent = ents.Create( "lunasflightschool_missile" )
+		ent:SetPos( Muzzle.Pos )
+		ent:SetAngles( Muzzle.Ang:Up():Angle() )
+		ent:Spawn()
+		ent:Activate()
+		ent:SetAttacker( self:GetTurretDriver() )
+		ent:SetInflictor( self )
+		ent:SetStartVelocity( 10000 )
+		ent:SetCleanMissile( true )
+		
+		constraint.NoCollide( ent, self, 0, 0 ) 
+		
+		if IsValid( self:GetRearEnt() ) then
+			constraint.NoCollide( ent, self:GetRearEnt(), 0, 0 )
+		end
+		
+		self:TakeSecondaryAmmo()
+	end
+end
+
+function ENT:GunnerWeapons( RearEnt, Driver, Pod )
+	if not IsValid( RearEnt ) or not IsValid( Pod ) or not IsValid( Driver ) then 
+		return
+	else
+		Driver:CrosshairDisable()
+	end
+
+	local EyeAngles = Pod:WorldToLocalAngles( Driver:EyeAngles() )
+	local AimDir = EyeAngles:Forward()
+	
+	local KeyAttack = Driver:KeyDown( IN_ATTACK )
+
+	local startpos = RearEnt:LocalToWorld( Vector(-200,0,180) ) + EyeAngles:Up() * 100
+	local TracePlane = util.TraceLine( {
+		start = startpos,
+		endpos = (startpos + AimDir * 50000),
+		filter = {RearEnt,self}
+	} )
+
+	local Pos,Ang = WorldToLocal( Vector(0,0,0), (TracePlane.HitPos - RearEnt:LocalToWorld( Vector(-230.76,0,165.42) ) ):GetNormalized():Angle(), Vector(0,0,0), RearEnt:LocalToWorldAngles( Angle(0,180,0) ) )
+	
+	RearEnt:SetPoseParameter("gun_pitch", math.Clamp(Ang.p,-10,30) )
+	RearEnt:SetPoseParameter("gun_yaw", Ang.y )
+
+	self:SetRearInRange( Ang.p < 30 and Ang.p > -10 and math.abs( Ang.y ) < 60 )
+	
+	if KeyAttack then
+		self:FireRearGun()
 	end
 end
 
@@ -386,22 +641,3 @@ function ENT:ApplyAngForceTo( ent, angForce )
 	phys:ApplyForceOffset( up, roll )
 	phys:ApplyForceOffset( up * -1, roll * -1 )
 end
-
-function ENT:ApplyThrustVtol( PhysObj, vDirection, fForce )
-end
-
-function ENT:ApplyThrust( PhysObj, vDirection, fForce )
-end
-
-function ENT:CalcFlightOverride( Pitch, Yaw, Roll, Stability )
-	return 0,0,0,0,0,0
-end
-
-function ENT:RunOnSpawn()
-end
-
-hook.Add( "EntityTakeDamage", "ATTE_DMG_TRANSMIT", function( target, dmginfo )
-	if IsValid( target.ATTEBaseEnt ) then
-		target.ATTEBaseEnt:TakeDamageInfo( dmginfo ) 
-	end
-end )
