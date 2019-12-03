@@ -220,7 +220,7 @@ function ENT:PrimaryAttack()
 		[4] = Muzzle4,
 	}
 	
-	self.FireIndex = self.FireIndex and self.FireIndex + 1 or 1
+	self.FireIndex = self.FireIndex and self.FireIndex + 1 or 2
 	
 	if self.FireIndex > 4 then
 		self.FireIndex = 1
@@ -304,7 +304,13 @@ local GroupCollide = {
 	[COLLISION_GROUP_WORLD] = true,
 }
 
+function ENT:VeryLowTick()
+	return FrameTime() > (1 / 30)
+end
+
 function ENT:OnTick()
+
+	if self:GetAI() then self:SetAI( false ) end
 	
 	local TurretPod = self:GetTurretSeat()
 	if IsValid( TurretPod ) then
@@ -319,6 +325,9 @@ function ENT:OnTick()
 			if IsValid( ent ) then
 				local PObj = ent:GetPhysicsObject()
 				PObj:EnableGravity( false ) 
+				if not PObj:IsMotionEnabled() then
+					PObj:EnableMotion( true )
+				end
 			end
 		end
 		
@@ -383,7 +392,9 @@ function ENT:OnTick()
 	
 	self:SetIsMoving(math.abs(self.smSpeed) > 1)
 	
-	for _, ent in pairs( {self,self:GetRearEnt()} ) do
+	local ATTE = {self,self:GetRearEnt()}
+	
+	for _, ent in pairs( ATTE ) do
 		if IsValid( ent ) then
 			local PObj = ent:GetPhysicsObject()
 			
@@ -415,8 +426,8 @@ function ENT:OnTick()
 					maxs = Vector( 20, 20, 0 ),
 				})
 
-				PObj:EnableGravity( not Trace.Hit ) 
-
+				PObj:EnableGravity( not Trace.Hit )
+				
 				if Trace.Hit and math.deg( math.acos( math.Clamp( Trace.HitNormal:Dot( Vector(0,0,1) ) ,-1,1) ) ) < 70 then
 					Hit = Hit + 1
 					local Mass = PObj:GetMass()
@@ -439,7 +450,11 @@ function ENT:OnTick()
 					ent.smNormal = ent.smNormal and ent.smNormal + (Trace.HitNormal - ent.smNormal) * FTtoTick * 0.01 or Trace.HitNormal
 					local Normal = (ent.smNormal + self:LocalToWorldAngles( Angle(P,0,R) ):Up() * 0.1):GetNormalized()
 					
-					local Force = Up * (TargetDist - Dist) * 7 - Up * VelL.z + Right * VelL.y
+					local Force = (Up * (TargetDist - Dist) * 3 - Up * VelL.z + Right * VelL.y) * 0.5
+					
+					if self:VeryLowTick() then
+						Force = (Up * (TargetDist - Dist) * 1 - Up * VelL.z * 0.5 + Right * VelL.y * 0.5) * 0.5
+					end
 					
 					PObj:ApplyForceCenter( Force * Mass * FTtoTick )
 					
@@ -467,10 +482,47 @@ function ENT:OnTick()
 						AngForce.y = self:WorldToLocalAngles( Angle(0,self.smY,0) ).y
 					end
 					
-					self:ApplyAngForceTo( ent, (AngForce * 50 - self:GetAngVelFrom( ent ) * 2) * Mass * 10 * FTtoTick )
+					if self:VeryLowTick() then
+						self:ApplyAngForceTo( ent, (AngForce * 50 - self:GetAngVelFrom( ent ) * 4) * Mass * 2 * FTtoTick )
+						
+						PObj:ApplyForceOffset( -Normal * Mass * 5 * FTtoTick, -Up * 200 )
+						PObj:ApplyForceOffset( Normal * Mass * 5 * FTtoTick, Up * 200 )
+					else
+						self:ApplyAngForceTo( ent, (AngForce * 50 - self:GetAngVelFrom( ent ) * 2) * Mass * 10 * FTtoTick )
 					
-					PObj:ApplyForceOffset( -Normal * Mass * 5 * FTtoTick, -Up * 2000 )
-					PObj:ApplyForceOffset( Normal * Mass * 5 * FTtoTick, Up * 2000 )
+						PObj:ApplyForceOffset( -Normal * Mass * 5 * FTtoTick, -Up * 2000 )
+						PObj:ApplyForceOffset( Normal * Mass * 5 * FTtoTick, Up * 2000 )
+					end
+				end
+			end
+		end
+	end
+	
+	if Hit >= 2 then
+		local IsHeld = self:IsPlayerHolding() or self:GetRearEnt():IsPlayerHolding() 
+		local ShouldMotionEnable = self:GetIsMoving() or IsHeld
+		
+		if IsHeld then
+			self.smSpeed = 200
+		end
+		
+		for _, ent in pairs( ATTE ) do
+			if IsValid( ent ) then
+				local PObj = ent:GetPhysicsObject()
+
+				
+				if PObj:IsMotionEnabled() ~= ShouldMotionEnable then
+					PObj:EnableMotion( ShouldMotionEnable )
+				end
+			end
+		end
+	else
+		for _, ent in pairs( ATTE ) do
+			if IsValid( ent ) then
+				local PObj = ent:GetPhysicsObject()
+
+				if not PObj:IsMotionEnabled() then
+					PObj:EnableMotion( ShouldMotionEnable )
 				end
 			end
 		end
@@ -484,8 +536,12 @@ function ENT:OnTick()
 		local VelL = self:WorldToLocal( self:GetPos() + Vel )
 
 		local Force = self:GetForward() * (self.smSpeed - VelL.x)
-
-		PObj:ApplyForceCenter( Force * Mass * FTtoTick )
+		
+		if self:VeryLowTick() then
+			PObj:ApplyForceCenter( Force * Mass * FTtoTick * 0.1 )
+		else
+			PObj:ApplyForceCenter( Force * Mass * FTtoTick )
+		end
 	end
 	
 	self:GunnerWeapons( self:GetRearEnt(), self:GetGunner(), self:GetGunnerSeat() )

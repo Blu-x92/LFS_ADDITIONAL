@@ -12,13 +12,17 @@
 ENT.Type            = "anim"
 DEFINE_BASECLASS( "lunasflightschool_basescript" )
 
-ENT.PrintName = "ATTE"
+ENT.PrintName = "LAAT/c (ATTE)"
 ENT.Author = "Blu"
 ENT.Information = ""
 ENT.Category = "[LFS]"
 
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
+
+ENT.LAATC_PICKUPABLE = true
+ENT.LAATC_PICKUP_POS = Vector(-220,0,-115)
+ENT.LAATC_PICKUP_Angle = Angle(0,0,0)
 
 ENT.MDL = "models/blu/atte.mdl"
 ENT.GibModels = {

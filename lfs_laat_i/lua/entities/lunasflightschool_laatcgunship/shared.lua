@@ -56,4 +56,23 @@ ENT.MaxThrustVtol = 400
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Bool",22, "GXHairRG" )
+	self:NetworkVar( "Entity",22, "HeldEntity" )
 end
+
+sound.Add( {
+	name = "LAATc_GRABBER",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = 90,
+	pitch = 100,
+	sound = "lfs/laat/door_large_open.wav"
+} )
+
+sound.Add( {
+	name = "LAATc_GRABBER_CANTDROP",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = 90,
+	pitch = 100,
+	sound = "buttons/button8.wav"
+} )
