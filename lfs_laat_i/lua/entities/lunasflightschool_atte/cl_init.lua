@@ -9,7 +9,6 @@
 --DO NOT EDIT OR REUPLOAD THIS FILE
 --DO NOT EDIT OR REUPLOAD THIS FILE
 
-AddCSLuaFile( "cl_ikfunctions.lua" ) 
 
 include("shared.lua")
 include("cl_ikfunctions.lua")

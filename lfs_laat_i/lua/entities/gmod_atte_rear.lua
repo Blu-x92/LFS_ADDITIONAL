@@ -45,7 +45,6 @@ if SERVER then
 		end
 	end
 else 
-	AddCSLuaFile("entities/lunasflightschool_atte/cl_ikfunctions.lua")
 	include("entities/lunasflightschool_atte/cl_ikfunctions.lua")
 
 	function ENT:OnRemoveAdd() -- since ENT:OnRemove() is used by the IK script we need to do our stuff here

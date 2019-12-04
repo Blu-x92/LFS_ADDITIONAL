@@ -11,6 +11,7 @@
 
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "cl_ikfunctions.lua" )
 include("shared.lua")
 
 function ENT:SpawnFunction( ply, tr, ClassName )
