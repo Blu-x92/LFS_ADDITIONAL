@@ -307,6 +307,7 @@ local GroupCollide = {
 local CanMoveOn = {
 	["func_door"] = true,
 	["func_movelinear"] = true,
+	["prop_physics"] = true, -- nice to have if someone wants to build his own eleveator using props.
 }
 
 function ENT:VeryLowTick()
