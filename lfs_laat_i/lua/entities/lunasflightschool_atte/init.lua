@@ -318,6 +318,8 @@ function ENT:OnTick()
 
 	if self:GetAI() then self:SetAI( false ) end
 	
+	local ATTE = {self,self:GetRearEnt()}
+	
 	local TurretPod = self:GetTurretSeat()
 	if IsValid( TurretPod ) then
 		local TurretDriver = TurretPod:GetDriver()
@@ -327,7 +329,7 @@ function ENT:OnTick()
 	end
 	
 	if self:GetIsCarried() then 
-		for _, ent in pairs( {self,self:GetRearEnt()} ) do
+		for _, ent in pairs( ATTE ) do
 			if IsValid( ent ) then
 				local PObj = ent:GetPhysicsObject()
 				PObj:EnableGravity( false ) 
@@ -398,8 +400,6 @@ function ENT:OnTick()
 	self.smSpeed = self.smSpeed and self.smSpeed + ((KeyForward and MoveSpeed or 0) - (KeyBack and MoveSpeed or 0) - self.smSpeed) * FTtoTick * 0.05 or 0
 	
 	self:SetIsMoving(math.abs(self.smSpeed) > 1)
-	
-	local ATTE = {self,self:GetRearEnt()}
 	
 	for _, ent in pairs( ATTE ) do
 		if IsValid( ent ) then
@@ -530,6 +530,8 @@ function ENT:OnTick()
 			end
 		end
 	else
+		local ShouldMotionEnable = self:GetIsMoving() or IsHeld or HitMoveable
+		
 		for _, ent in pairs( ATTE ) do
 			if IsValid( ent ) then
 				local PObj = ent:GetPhysicsObject()
