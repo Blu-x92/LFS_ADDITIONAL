@@ -435,7 +435,9 @@ function ENT:OnTick()
 				PObj:EnableGravity( not Trace.Hit )
 				
 				if not HitMoveable then
-					HitMoveable = CanMoveOn[ Trace.Entity:GetClass() ]
+					if IsValid( Trace.Entity ) then
+						HitMoveable = CanMoveOn[ Trace.Entity:GetClass() ]
+					end
 				end
 
 				if Trace.Hit and math.deg( math.acos( math.Clamp( Trace.HitNormal:Dot( Vector(0,0,1) ) ,-1,1) ) ) < 70 then
