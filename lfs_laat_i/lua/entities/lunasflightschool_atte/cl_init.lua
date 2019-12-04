@@ -14,6 +14,21 @@ AddCSLuaFile( "cl_ikfunctions.lua" )
 include("shared.lua")
 include("cl_ikfunctions.lua")
 
+function ENT:DamageFX()
+	local HP = self:GetHP()
+	if HP == 0 or HP > self:GetMaxHP() * 0.5 then return end
+	
+	self.nextDFX = self.nextDFX or 0
+	
+	if self.nextDFX < CurTime() then
+		self.nextDFX = CurTime() + 0.05
+		
+		local effectdata = EffectData()
+			effectdata:SetOrigin( self:LocalToWorld( Vector(0,0,160) ) )
+		util.Effect( "lfs_blacksmoke", effectdata )
+	end
+end
+
 function ENT:OnRemoveAdd() -- since ENT:OnRemove() is used by the IK script we need to do our stuff here
 end
 
@@ -231,7 +246,9 @@ local GroupCollide = {
 	[COLLISION_GROUP_WORLD] = true,
 }
 
-function ENT:Think()
+function ENT:ThinkAdd()
+	self:DamageFX()
+	
 	local RearEnt = self:GetRearEnt()
 	
 	if not IsValid( RearEnt ) then return end

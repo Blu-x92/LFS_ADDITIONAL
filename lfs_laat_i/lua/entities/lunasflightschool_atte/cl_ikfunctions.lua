@@ -21,8 +21,10 @@ end
 function ENT:DrawAdd()
 end
 
-function ENT:Draw()
+function ENT:ThinkAdd()
+end
 
+function ENT:Think()
 	local GameIsPaused = ((self.DrawTime or 0) - CurTime()) == 0
 	
 	if GameIsPaused then
@@ -35,6 +37,10 @@ function ENT:Draw()
 		end
 	end
 	
+	self:ThinkAdd()
+end
+
+function ENT:Draw()
 	self.DrawTime = CurTime()
 	
 	self:DrawAdd()
