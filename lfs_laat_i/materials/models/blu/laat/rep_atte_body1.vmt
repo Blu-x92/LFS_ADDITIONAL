@@ -7,4 +7,6 @@
 	"$detail" "models/blu/laat/details/detail_metal"
 	"$detailscale"		"13"
 	"$detailblendfactor"		"0.75"	
+
+	"$halflambert" "1"
 }
