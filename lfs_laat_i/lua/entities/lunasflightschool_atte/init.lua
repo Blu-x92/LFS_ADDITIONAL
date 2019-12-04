@@ -304,6 +304,11 @@ local GroupCollide = {
 	[COLLISION_GROUP_WORLD] = true,
 }
 
+local CanMoveOn = {
+	["func_door"] = true,
+	["func_movelinear"] = true,
+}
+
 function ENT:VeryLowTick()
 	return FrameTime() > (1 / 30)
 end
@@ -355,6 +360,7 @@ function ENT:OnTick()
 	local TurnRate = FTtoTick * 0.6
 	
 	local Hit = 0
+	local HitMoveable = false
 	local Vel = self:GetVelocity()
 	
 	self:SetMove( self:GetMove() + self:WorldToLocal( self:GetPos() + Vel ).x * FT * 1.8 )
@@ -428,6 +434,10 @@ function ENT:OnTick()
 
 				PObj:EnableGravity( not Trace.Hit )
 				
+				if not HitMoveable then
+					HitMoveable = CanMoveOn[ Trace.Entity:GetClass() ]
+				end
+
 				if Trace.Hit and math.deg( math.acos( math.Clamp( Trace.HitNormal:Dot( Vector(0,0,1) ) ,-1,1) ) ) < 70 then
 					Hit = Hit + 1
 					local Mass = PObj:GetMass()
@@ -498,7 +508,7 @@ function ENT:OnTick()
 		end
 	end
 	
-	if Hit >= 2 then
+	if Hit >= 2 and not HitMoveable then
 		local IsHeld = self:IsPlayerHolding() or self:GetRearEnt():IsPlayerHolding() 
 		local ShouldMotionEnable = self:GetIsMoving() or IsHeld
 		

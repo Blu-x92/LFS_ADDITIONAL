@@ -22,7 +22,21 @@ function ENT:DrawAdd()
 end
 
 function ENT:Draw()
+
+	local GameIsPaused = ((self.DrawTime or 0) - CurTime()) == 0
+	
+	if GameIsPaused then
+		self.GameIsPaused = true
+	end
+	
+	if self.GameIsPaused then
+		if not GameIsPaused then
+			self.GameIsResumed = true
+		end
+	end
+	
 	self.DrawTime = CurTime()
+	
 	self:DrawAdd()
 end
 
@@ -47,6 +61,12 @@ function ENT:GetLegEnts( index, L1, L2, JOINTANG, STARTPOS, ENDPOS, ATTACHMENTS 
 			
 			return
 		end
+	end
+	
+	if self.GameIsPaused and self.GameIsResumed then
+		self.GameIsPaused = false
+		self.GameIsResumed = false
+		self:LegClearAll()
 	end
 	
 	if not istable( self.IK_Joints ) then self.IK_Joints = {} end
