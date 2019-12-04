@@ -246,7 +246,7 @@ local GroupCollide = {
 	[COLLISION_GROUP_WORLD] = true,
 }
 
-function ENT:ThinkAdd()
+function ENT:ThinkAdd() -- ENT:Think() is used by the IK script we need to do our stuff here instead
 	self:DamageFX()
 	
 	local RearEnt = self:GetRearEnt()
