@@ -434,7 +434,9 @@ function ENT:OnTick()
 					maxs = Vector( 20, 20, 0 ),
 				})
 
-				PObj:EnableGravity( not Trace.Hit )
+				local IsOnGround = Trace.Hit and math.deg( math.acos( math.Clamp( Trace.HitNormal:Dot( Vector(0,0,1) ) ,-1,1) ) ) < 70
+				
+				PObj:EnableGravity( not IsOnGround )
 				
 				if not HitMoveable then
 					if IsValid( Trace.Entity ) then
@@ -442,7 +444,7 @@ function ENT:OnTick()
 					end
 				end
 
-				if Trace.Hit and math.deg( math.acos( math.Clamp( Trace.HitNormal:Dot( Vector(0,0,1) ) ,-1,1) ) ) < 70 then
+				if IsOnGround then
 					Hit = Hit + 1
 					local Mass = PObj:GetMass()
 					local TargetDist = 140
@@ -623,7 +625,14 @@ function ENT:FireTurret()
 	if self.cFireIndex >= 3 then
 		self.cFireIndex = 0
 		self:SetNextSecondary( 2 )
-		self:GetTurretSeat():EmitSound("LAATc_ATTE_CANNONRELOAD")
+		timer.Simple(0.2, function()
+			if not IsValid( self ) then return end
+			
+			local Pod = self:GetTurretSeat()
+			if not IsValid( Pod ) then return end
+			
+			Pod:EmitSound("LAATc_ATTE_CANNONRELOAD")
+		end )
 	end
 	
 	self:EmitSound( "LAATc_ATTE_CANNONFIRE" )
@@ -649,6 +658,8 @@ function ENT:FireTurret()
 		end
 		
 		self:TakeSecondaryAmmo()
+		
+		self:PlayAnimation( "fire_turret" )
 	end
 end
 

@@ -38,7 +38,7 @@ ENT.GibModels = {
 ENT.RotorPos = Vector(265,0,175)
 
 ENT.MaxPrimaryAmmo = 1000
-ENT.MaxSecondaryAmmo = 50
+ENT.MaxSecondaryAmmo = 54
 
 ENT.AITEAM = 2
 
