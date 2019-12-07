@@ -164,7 +164,13 @@ function ENT:GetLegEnts( index, L1, L2, JOINTANG, STARTPOS, ENDPOS, ATTACHMENTS 
 			end
 		end
 	end
-	
+
+	if not IsValid( self.IK_Joints[ index ].LegRotCalc ) or not IsValid( self.IK_Joints[ index ].LegBaseRot ) or not IsValid( self.IK_Joints[ index ].LegEnt1 ) or not IsValid( self.IK_Joints[ index ].LegEnt2 ) or not IsValid( self.IK_Joints[ index ].LegEnt3 ) or not IsValid( self.IK_Joints[ index ].LegEnt4 ) then
+		self:LegClearAll()
+
+		return
+	end
+
 	self.IK_Joints[ index ].LegRotCalc:SetAngles(self.IK_Joints[ index ].LegBaseRot:LocalToWorldAngles( self.IK_Joints[ index ].LegBaseRot:WorldToLocal( ENDPOS ):Angle() ) )
 
 	local Dist = math.min( (self.IK_Joints[ index ].LegRotCalc:GetPos() - ENDPOS ):Length(), L1 + L2)
