@@ -20,6 +20,8 @@ ENT.Category = "[LFS]"
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
 
+ENT.RotorPos = Vector(250,0,175)
+
 ENT.LAATC_PICKUPABLE = true
 ENT.LAATC_PICKUP_POS = Vector(-220,0,-115)
 ENT.LAATC_PICKUP_Angle = Angle(0,0,0)
@@ -35,8 +37,6 @@ ENT.GibModels = {
 	"models/blu/atte_smallleg_part3.mdl"
 }
 
-ENT.RotorPos = Vector(265,0,175)
-
 ENT.MaxPrimaryAmmo = 1000
 ENT.MaxSecondaryAmmo = 54
 
@@ -48,8 +48,6 @@ ENT.SeatPos = Vector(218,0,148)
 ENT.SeatAng = Angle(0,-90,0)
 
 ENT.MaxHealth = 10000
-
-ENT.RotorPos = Vector(70,0,140)
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Entity",22, "RearEnt" )
