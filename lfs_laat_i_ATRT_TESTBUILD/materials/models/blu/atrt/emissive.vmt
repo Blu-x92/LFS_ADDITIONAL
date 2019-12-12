@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/blu/atrt/emissive"
+	"$translucent" 1
+	"$halflambert" "1"
+	"$selfillum" 1
+}
