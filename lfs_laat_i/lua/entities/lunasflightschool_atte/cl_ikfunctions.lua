@@ -15,35 +15,6 @@ end
 
 function ENT:OnRemove()
 	self:LegClearAll()
-	self:OnRemoveAdd()
-end
-
-function ENT:DrawAdd()
-end
-
-function ENT:ThinkAdd()
-end
-
-function ENT:Think()
-	local GameIsPaused = ((self.DrawTime or 0) - CurTime()) == 0
-	
-	if GameIsPaused then
-		self.GameIsPaused = true
-	end
-	
-	if self.GameIsPaused then
-		if not GameIsPaused then
-			self.GameIsResumed = true
-		end
-	end
-	
-	self:ThinkAdd()
-end
-
-function ENT:Draw()
-	self.DrawTime = CurTime()
-	
-	self:DrawAdd()
 end
 
 function ENT:LegClearAll()
@@ -61,31 +32,21 @@ function ENT:LegClearAll()
 end
 
 function ENT:GetLegEnts( index, L1, L2, JOINTANG, STARTPOS, ENDPOS, ATTACHMENTS )
-	if self.DrawTime then
-		if self.DrawTime < (CurTime() - FrameTime() * 2) then
-			self:LegClearAll()
-			
-			return
-		end
-	end
-	
 	if not istable( self.IK_Joints ) then self.IK_Joints = {} end
 
-	if self.GameIsPaused and self.IK_Joints[ index ] then
-		for k, v in pairs( self.IK_Joints[ index ] ) do
-			if IsValid( v ) then
-				v:Remove()
+	if self.IK_Joints[ index ] then
+		if IsValid( self.IK_Joints[ index ].LegBaseRot ) then
+			if self:WorldToLocal( self.IK_Joints[ index ].LegBaseRot:GetPos() ) == Vector(0,0,0) then
+				for k, v in pairs( self.IK_Joints[ index ] ) do
+					if IsValid( v ) then
+						v:Remove()
+					end
+				end
+				self.IK_Joints[ index ] = nil
 			end
 		end
-		
-		self.IK_Joints[ index ] = nil
-
-		if self.GameIsResumed then
-			self.GameIsPaused = false
-			self.GameIsResumed = false
-		end
 	end
-	
+
 	if not self.IK_Joints[ index ] then
 		self.IK_Joints[ index ] = {}
 		

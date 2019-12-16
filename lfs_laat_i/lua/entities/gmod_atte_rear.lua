@@ -50,10 +50,10 @@ else
 	function ENT:OnRemoveAdd() -- since ENT:OnRemove() is used by the IK script we need to do our stuff here
 	end
 
-	function ENT:DrawAdd() -- ENT:Draw() is used by the IK script we need to do our stuff here instead
+	function ENT:Draw()
 		self:DrawModel()
 	end
 	
-	function ENT:ThinkAdd() -- ENT:Think() is used by the IK script we need to do our stuff here instead
+	function ENT:Think()
 	end
 end
