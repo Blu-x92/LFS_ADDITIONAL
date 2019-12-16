@@ -69,13 +69,22 @@ function ENT:GetLegEnts( index, L1, L2, JOINTANG, STARTPOS, ENDPOS, ATTACHMENTS 
 		end
 	end
 	
-	if self.GameIsPaused and self.GameIsResumed then
-		self.GameIsPaused = false
-		self.GameIsResumed = false
-		self:LegClearAll()
-	end
-	
 	if not istable( self.IK_Joints ) then self.IK_Joints = {} end
+
+	if self.GameIsPaused and self.IK_Joints[ index ] then
+		for k, v in pairs( self.IK_Joints[ index ] ) do
+			if IsValid( v ) then
+				v:Remove()
+			end
+		end
+		
+		self.IK_Joints[ index ] = nil
+
+		if self.GameIsResumed then
+			self.GameIsPaused = false
+			self.GameIsResumed = false
+		end
+	end
 	
 	if not self.IK_Joints[ index ] then
 		self.IK_Joints[ index ] = {}
