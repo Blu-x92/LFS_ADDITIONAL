@@ -238,9 +238,9 @@ function ENT:PrimaryAttack()
 
 	local Pos = FirePos[self.FireIndex].Pos
 	local Dir =  FirePos[self.FireIndex].Ang:Up()
-	
-	if math.deg( math.acos( math.Clamp( Dir:Dot( self.MainGunDir ) ,-1,1) ) ) < 8 then
-		Dir = self.MainGunDir
+
+	if self:GetFrontInRange() and self.MainGunPos then
+		Dir = (self.MainGunPos - Pos):GetNormalized()
 	end
 	
 	local bullet = {}
@@ -283,6 +283,8 @@ function ENT:MainGunPoser( EyeAngles )
 		filter = {self,self:GetRearEnt()}
 	} )
 	
+	self.MainGunPos = TracePlane.HitPos
+	
 	local AimAngles = self:WorldToLocalAngles( (TracePlane.HitPos - self:LocalToWorld( Vector(265,0,100)) ):GetNormalized():Angle() )
 	
 	self:SetPoseParameter("frontgun_pitch", math.Clamp(AimAngles.p,-5,5) )
@@ -292,7 +294,8 @@ function ENT:MainGunPoser( EyeAngles )
 	local Muzzle = self:GetAttachment( ID )
 	
 	if Muzzle then
-		self:SetFrontInRange( math.deg( math.acos( math.Clamp( Muzzle.Ang:Up():Dot( self.MainGunDir ) ,-1,1) ) ) < 8 )
+		local DirAng = self:WorldToLocalAngles( (self.MainGunPos - startpos):Angle() )
+		self:SetFrontInRange( math.abs( DirAng.p ) < 12 and math.abs( DirAng.y ) < 35 )
 	end
 end
 

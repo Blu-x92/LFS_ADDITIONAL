@@ -62,7 +62,7 @@ function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 		local radius = 800
 		radius = radius + radius * Pod:GetCameraDistance()
 		
-		local StartPos = self:GetRotorPos() + view.angles:Up() * 250
+		local StartPos = self:LocalToWorld( Vector(-400,0,250) ) + view.angles:Up() * 250
 		local EndPos = StartPos - view.angles:Forward() * radius
 		
 		local WallOffset = 4

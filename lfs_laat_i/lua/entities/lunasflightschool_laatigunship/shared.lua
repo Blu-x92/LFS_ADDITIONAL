@@ -25,7 +25,7 @@ ENT.SeatAng = Angle(0,-90,0)
 
 ENT.MaxHealth = 4000
 
-ENT.MaxPrimaryAmmo = 800
+ENT.MaxPrimaryAmmo = 1400
 ENT.MaxSecondaryAmmo = 26
 
 ENT.MaxTurnPitch = 70

@@ -83,36 +83,37 @@ function ENT:PrimaryAttack()
 	
 	self:SetNextPrimary( 0.25 )
 	
-	self.MirrorPrimary = not self.MirrorPrimary
-	
-	if not isnumber( self.frontgunYaw ) then return end
+	for i = 1, 2 do
+		self.MirrorPrimary = not self.MirrorPrimary
+		
+		if not isnumber( self.frontgunYaw ) then return end
 
-	if self.frontgunYaw > 5 and self.MirrorPrimary then return end
-	if self.frontgunYaw < -5 and not self.MirrorPrimary then return end
-	
-	self:EmitSound( "LAATi_FIRE" )
+		if (self.frontgunYaw < 5 and self.MirrorPrimary) or (self.frontgunYaw > -5 and not self.MirrorPrimary) then
+			self:EmitSound( "LAATi_FIRE" )
 
-	local Pos = self.MirrorPrimary and MuzzleL.Pos or MuzzleR.Pos
-	local Dir =  (self.MirrorPrimary and MuzzleL.Ang or MuzzleR.Ang):Up()
-	
-	local bullet = {}
-	bullet.Num 	= 1
-	bullet.Src 	= Pos
-	bullet.Dir 	= Dir
-	bullet.Spread 	= Vector( 0.01,  0.01, 0 )
-	bullet.Tracer	= 1
-	bullet.TracerName	= "lfs_laser_green"
-	bullet.Force	= 100
-	bullet.HullSize 	= 20
-	bullet.Damage	= 125
-	bullet.Attacker 	= self:GetDriver()
-	bullet.AmmoType = "Pistol"
-	bullet.Callback = function(att, tr, dmginfo)
-		dmginfo:SetDamageType(DMG_AIRBOAT)
+			local Pos = self.MirrorPrimary and MuzzleL.Pos or MuzzleR.Pos
+			local Dir =  (self.MirrorPrimary and MuzzleL.Ang or MuzzleR.Ang):Up()
+			
+			local bullet = {}
+			bullet.Num 	= 1
+			bullet.Src 	= Pos
+			bullet.Dir 	= Dir
+			bullet.Spread 	= Vector( 0.01,  0.01, 0 )
+			bullet.Tracer	= 1
+			bullet.TracerName	= "lfs_laser_green"
+			bullet.Force	= 100
+			bullet.HullSize 	= 20
+			bullet.Damage	= 63
+			bullet.Attacker 	= self:GetDriver()
+			bullet.AmmoType = "Pistol"
+			bullet.Callback = function(att, tr, dmginfo)
+				dmginfo:SetDamageType(DMG_AIRBOAT)
+			end
+			self:FireBullets( bullet )
+			
+			self:TakePrimaryAmmo()
+		end
 	end
-	self:FireBullets( bullet )
-	
-	self:TakePrimaryAmmo()
 end
 
 function ENT:SecondaryAttack()

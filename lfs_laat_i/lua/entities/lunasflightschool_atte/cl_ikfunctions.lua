@@ -35,8 +35,8 @@ function ENT:GetLegEnts( index, L1, L2, JOINTANG, STARTPOS, ENDPOS, ATTACHMENTS 
 	if not istable( self.IK_Joints ) then self.IK_Joints = {} end
 
 	if self.IK_Joints[ index ] then
-		if IsValid( self.IK_Joints[ index ].LegBaseRot ) then
-			if self:WorldToLocal( self.IK_Joints[ index ].LegBaseRot:GetPos() ) == Vector(0,0,0) then
+		if IsValid( self.IK_Joints[ index ].LegBaseRot ) and IsValid( self.IK_Joints[ index ].LegRotCalc ) then
+			if (self.IK_Joints[ index ].LegBaseRot:GetPos() - STARTPOS):Length() > 1 or (self.IK_Joints[ index ].LegRotCalc:GetPos() - STARTPOS):Length() > 1 then
 				for k, v in pairs( self.IK_Joints[ index ] ) do
 					if IsValid( v ) then
 						v:Remove()

@@ -20,7 +20,7 @@ ENT.Category = "[LFS]"
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
 
-ENT.RotorPos = Vector(250,0,175)
+ENT.RotorPos = Vector(200,0,185)
 
 ENT.LAATC_PICKUPABLE = true
 ENT.LAATC_PICKUP_POS = Vector(-220,0,-115)
