@@ -77,15 +77,14 @@ function ENT:PrimaryAttack()
 	if not MuzzleL or not MuzzleR then return end
 	
 	self:SetNextPrimary( 0.25 )
-	
+	self:EmitSound( "LAATi_FIRE" )
+
 	for i = 1, 2 do
 		self.MirrorPrimary = not self.MirrorPrimary
 		
 		if not isnumber( self.frontgunYaw ) then return end
 
 		if (self.frontgunYaw < 5 and self.MirrorPrimary) or (self.frontgunYaw > -5 and not self.MirrorPrimary) then
-			self:EmitSound( "LAATi_FIRE" )
-
 			local Pos = self.MirrorPrimary and MuzzleL.Pos or MuzzleR.Pos
 			local Dir =  (self.MirrorPrimary and MuzzleL.Ang or MuzzleR.Ang):Up()
 			
