@@ -17,7 +17,7 @@ ENT.Author = "Blu"
 ENT.Information = ""
 ENT.Category = "[LFS]"
 
-ENT.Spawnable		= true
+ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
 ENT.ATRT = true
 
