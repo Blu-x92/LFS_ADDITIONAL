@@ -11,8 +11,6 @@ ENT.Category = "[LFS]"
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
 
-ENT.UseLAATiAnimHook = true
-
 ENT.MDL = "models/blu/laat_c.mdl"
 
 ENT.AITEAM = 2
