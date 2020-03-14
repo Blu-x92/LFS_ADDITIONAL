@@ -259,7 +259,8 @@ function ENT:Think()
 	local Stride = 40
 	local Lift = 20
 	
-	local FT = FrameTime()
+	local FT = math.min(FrameTime(),0.08) -- if fps lower than 12, clamp the frametime to avoid spazzing.
+
 	local Rate = FT * 20
 
 	if Vel:Length() < 10 then -- sync with server animation when not moving
@@ -440,7 +441,7 @@ function ENT:Think()
 	else
 		self.FSOG5 = true
 	end
-	local ENDPOS = util.TraceLine( { start = self.TRACEPOS5 - Up * 50, endpos = self.TRACEPOS5 - Up * 160, filter = function( ent ) if ent == self or ent == self:GetRearEnt() or GroupCollide[ ent:GetCollisionGroup() ] then return false end return true end, } ).HitPos + Vector(0,0,65+Z)
+	local ENDPOS = util.TraceLine( { start = self.TRACEPOS5 - Up * 50, endpos = self.TRACEPOS5 - Up * 160, filter = function( ent ) if ent == self or ent == self:GetRearEnt() or GroupCollide[ ent:GetCollisionGroup() ] then return false end return true end, } ).HitPos + Vector(0,0,60+Z)
 	if self.FSOG5 ~= self.oldFSOG5 then
 		self.oldFSOG5 = self.FSOG5
 		if self.FSOG5 then
@@ -473,7 +474,7 @@ function ENT:Think()
 	else
 		self.FSOG6 = true
 	end
-	local ENDPOS = util.TraceLine( { start = self.TRACEPOS6 - Up * 50, endpos = self.TRACEPOS6 - Up * 160, filter = function( ent ) if ent == self or ent == self:GetRearEnt() or GroupCollide[ ent:GetCollisionGroup() ] then return false end return true end } ).HitPos + Vector(0,0,65+Z)
+	local ENDPOS = util.TraceLine( { start = self.TRACEPOS6 - Up * 50, endpos = self.TRACEPOS6 - Up * 160, filter = function( ent ) if ent == self or ent == self:GetRearEnt() or GroupCollide[ ent:GetCollisionGroup() ] then return false end return true end } ).HitPos + Vector(0,0,60+Z)
 	if self.FSOG6 ~= self.oldFSOG6 then
 		self.oldFSOG6 = self.FSOG6
 		if self.FSOG6 then
