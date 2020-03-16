@@ -39,7 +39,7 @@ function EFFECT:Init( data )
 			particle:SetStartSize( 20 )
 			particle:SetEndSize( math.Rand(30,40) )
 			particle:SetRoll( math.Rand(-1,1) )
-			particle:SetColor( 120,100,50 )
+			particle:SetColor( 60,60,60 )
 			particle:SetGravity( VectorRand() * 200 + Vector(0,0,1000) )
 			particle:SetCollide( false )
 		end
