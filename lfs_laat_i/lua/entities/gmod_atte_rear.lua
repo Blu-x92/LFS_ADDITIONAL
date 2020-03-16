@@ -24,12 +24,19 @@ if SERVER then
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetSolid( SOLID_VPHYSICS )
+		self:SetUseType( SIMPLE_USE )
 	end
 
 	function ENT:Use( ply )
-		if IsValid( self.ATTEBaseEnt ) then
-			self.ATTEBaseEnt:SetPassenger( ply )
+		if not IsValid( self.ATTEBaseEnt ) or not IsValid( ply ) then return end
+
+		if self.ATTEBaseEnt:GetlfsLockedStatus() or (simfphys.LFS.TeamPassenger:GetBool() and ((self.ATTEBaseEnt:GetAITEAM() ~= ply:lfsGetAITeam()) and ply:lfsGetAITeam() ~= 0 and self.ATTEBaseEnt:GetAITEAM() ~= 0)) then 
+			self:EmitSound( "doors/default_locked.wav" )
+
+			return
 		end
+
+		self.ATTEBaseEnt:SetPassenger( ply )
 	end
 
 	function ENT:Think()
