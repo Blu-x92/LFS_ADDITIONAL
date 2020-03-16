@@ -110,6 +110,10 @@ function ENT:RunOnSpawn()
 
 	local GunnerSeat = self:AddPassengerSeat( Vector(150,0,150), Angle(0,-90,0) )
 	self:SetGunnerSeat( GunnerSeat )
+
+	for i =1,4 do
+		self:AddPassengerSeat( Vector(100,0,150), Angle(0,-90,0) )
+	end
 end
 
 function ENT:ApplyThrustVtol( PhysObj, vDirection, fForce ) -- kill vtol function
@@ -423,7 +427,7 @@ function ENT:OnTick()
 				
 				local Trace = util.TraceHull( {
 					start = MassCenter, 
-					endpos = MassCenter - Up * 200,
+					endpos = MassCenter - Up * 195,
 					
 					filter = function( ent ) 
 						if ent == self or ent == self:GetRearEnt() or ent:IsPlayer() or ent:IsNPC() or ent:IsVehicle() or GroupCollide[ ent:GetCollisionGroup() ] then

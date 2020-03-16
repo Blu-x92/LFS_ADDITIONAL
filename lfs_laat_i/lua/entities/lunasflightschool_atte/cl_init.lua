@@ -42,6 +42,10 @@ end
 function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 	local Pod = ply:GetVehicle()
 
+	if ply == self:GetDriver() then
+		return view
+	end
+
 	if ply == self:GetGunner() then
 		local BaseEnt = self:GetRearEnt()
 		
@@ -74,6 +78,8 @@ function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 				view.origin = view.origin + tr.HitNormal * WallOffset
 			end
 		end
+
+		return view
 	end
 	
 	if ply == self:GetTurretDriver() then
@@ -104,9 +110,38 @@ function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 		if tr.Hit and not tr.StartSolid then
 			view.origin = view.origin + tr.HitNormal * WallOffset
 		end
-		
+
+		return view
 	end
+
+	local radius = 800
+	radius = radius + radius * Pod:GetCameraDistance()
 	
+	local StartPos = self:LocalToWorld( Vector(0,0,200) ) + view.angles:Up() * 100
+	local EndPos = StartPos - view.angles:Forward() * radius
+	
+	local WallOffset = 4
+
+	local tr = util.TraceHull( {
+		start = StartPos,
+		endpos = EndPos,
+		filter = function( e )
+			local c = e:GetClass()
+			local collide = not c:StartWith( "prop_physics" ) and not c:StartWith( "prop_dynamic" ) and not c:StartWith( "prop_ragdoll" ) and not e:IsVehicle() and not c:StartWith( "gmod_" ) and not c:StartWith( "player" ) and not e.LFS
+			
+			return collide
+		end,
+		mins = Vector( -WallOffset, -WallOffset, -WallOffset ),
+		maxs = Vector( WallOffset, WallOffset, WallOffset ),
+	} )
+	
+	view.drawviewer = true
+	view.origin = tr.HitPos
+	
+	if tr.Hit and not tr.StartSolid then
+		view.origin = view.origin + tr.HitNormal * WallOffset
+	end
+
 	return view
 end
 
