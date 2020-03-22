@@ -1,0 +1,10 @@
+{
+	"title"		: "[LFS] Edit-Properties Disabler",
+	"type"		: "tool",
+	"tags"		: [ "roleplay", "build" ],
+	"ignore"	: [
+		"*.psd",
+		"*.vcproj",
+		"*.svn*"
+	]
+}
