@@ -648,15 +648,15 @@ function ENT:FireTurret()
 	local Muzzle = self:GetAttachment( ID )
 
 	if Muzzle then
-		local ent = ents.Create( "lunasflightschool_missile" )
+		local ent = ents.Create( "lfs_atte_massdriver_projectile" )
 		ent:SetPos( Muzzle.Pos )
 		ent:SetAngles( Muzzle.Ang:Up():Angle() )
 		ent:Spawn()
 		ent:Activate()
 		ent:SetAttacker( self:GetTurretDriver() )
 		ent:SetInflictor( self )
+		ent:SetRearEnt( self:GetRearEnt() )
 		ent:SetStartVelocity( 10000 )
-		ent:SetCleanMissile( true )
 		
 		constraint.NoCollide( ent, self, 0, 0 ) 
 		

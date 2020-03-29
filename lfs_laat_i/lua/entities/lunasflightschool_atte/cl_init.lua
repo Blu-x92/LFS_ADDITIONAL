@@ -241,7 +241,7 @@ function ENT:LFSHudPaintPassenger( X, Y, ply )
 				endpos = (startpos + Muzzle.Ang:Up() * 50000),
 				mins = Vector( -10, -10, -10 ),
 				maxs = Vector( 10, 10, 10 ),
-				filter = function( ent ) if ent == self or ent == self:GetRearEnt() or ent:GetClass() == "lunasflightschool_missile" then return false end return true end
+				filter = function( ent ) if ent == self or ent == self:GetRearEnt() or ent:GetClass() == "lfs_atte_massdriver_projectile" then return false end return true end
 			} )
 			local HitPos = Trace.HitPos:ToScreen()
 
