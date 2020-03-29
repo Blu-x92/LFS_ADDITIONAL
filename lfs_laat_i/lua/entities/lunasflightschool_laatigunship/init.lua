@@ -18,7 +18,7 @@ end
 
 function ENT:RunOnSpawn()
 	self:GetDriverSeat().ExitPos = Vector(75,0,36)
-	
+	self:GetDriverSeat():SetCameraDistance( 1 )
 	
 	local GunnerSeat = self:AddPassengerSeat( Vector(111.87,0,156), Angle(0,-90,0) )
 	GunnerSeat.ExitPos = Vector(75,0,36)
