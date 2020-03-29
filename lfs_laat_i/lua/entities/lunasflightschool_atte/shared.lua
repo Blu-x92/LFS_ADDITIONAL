@@ -74,7 +74,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "LAATc_ATTE_CANNONFIRE",
-	channel = CHAN_WEAPON,
+	channel = CHAN_STATIC,
 	volume = 1.0,
 	level = 125,
 	pitch = {90, 110},
@@ -88,4 +88,13 @@ sound.Add( {
 	level = 90,
 	pitch = 100,
 	sound = "lfs/laatc_atte/overheat.mp3"
+} )
+
+sound.Add( {
+	name = "LAATc_ATTE_EXPLOSION",
+	channel = CHAN_STATIC,
+	volume = 1.0,
+	level = 125,
+	pitch = {90, 110},
+	sound = "^lfs/laatc_atte/massdriver_impact.wav"
 } )
