@@ -41,6 +41,7 @@ if SERVER then
 		if trace.Hit then
 			self:SetPos( trace.HitPos )
 			self:ProjDetonate()
+			self:simfphysDamage( trace.Entity )
 		end
 	end
 
@@ -95,37 +96,37 @@ if SERVER then
 		["gmod_sent_vehicle_fphysics_base"] = true,
 		["gmod_sent_vehicle_fphysics_wheel"] = true,
 	}
-	
-	function ENT:PhysicsCollide( data )
-		local HitEnt = data.HitEntity
-		
-		if IsValid( HitEnt ) and not self.Explode then 
-			local Class = HitEnt:GetClass():lower()
 
-			if IsThisSimfphys[ Class ] then
-				local Pos = self:GetPos()
-				
-				if Class == "gmod_sent_vehicle_fphysics_wheel" then
-					HitEnt = HitEnt:GetBaseEnt()
-				end
+	function ENT:simfphysDamage( HitEnt )
+		if not IsValid( HitEnt ) then return end
 
-				local effectdata = EffectData()
-					effectdata:SetOrigin( Pos )
-					effectdata:SetNormal( -self:GetForward() )
-				util.Effect( "manhacksparks", effectdata, true, true )
+		local Class = HitEnt:GetClass():lower()
 
-				local dmginfo = DamageInfo()
-					dmginfo:SetDamage( 1000 )
-					dmginfo:SetAttacker( IsValid( self:GetAttacker() ) and self:GetAttacker() or self )
-					dmginfo:SetDamageType( DMG_DIRECT )
-					dmginfo:SetInflictor( self ) 
-					dmginfo:SetDamagePosition( Pos ) 
-				HitEnt:TakeDamageInfo( dmginfo )
-				
-				sound.Play( "Missile.ShotDown", Pos, 140)
+		if IsThisSimfphys[ Class ] then
+			local Pos = self:GetPos()
+			
+			if Class == "gmod_sent_vehicle_fphysics_wheel" then
+				HitEnt = HitEnt:GetBaseEnt()
 			end
+
+			local effectdata = EffectData()
+				effectdata:SetOrigin( Pos )
+				effectdata:SetNormal( -self:GetForward() )
+			util.Effect( "manhacksparks", effectdata, true, true )
+
+			local dmginfo = DamageInfo()
+				dmginfo:SetDamage( 1000 )
+				dmginfo:SetAttacker( IsValid( self:GetAttacker() ) and self:GetAttacker() or self )
+				dmginfo:SetDamageType( DMG_DIRECT )
+				dmginfo:SetInflictor( self ) 
+				dmginfo:SetDamagePosition( Pos ) 
+			HitEnt:TakeDamageInfo( dmginfo )
+			
+			sound.Play( "Missile.ShotDown", Pos, 140)
 		end
-		
+	end
+
+	function ENT:PhysicsCollide( data )
 		self.Explode = true
 	end
 

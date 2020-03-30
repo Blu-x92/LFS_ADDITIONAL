@@ -25,6 +25,7 @@ if SERVER then
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetSolid( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
+		self:AddFlags( FL_OBJECT ) -- this allows npcs to see this entity
 	end
 
 	function ENT:Use( ply )
