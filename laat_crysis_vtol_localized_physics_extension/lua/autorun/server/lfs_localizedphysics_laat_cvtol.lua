@@ -41,7 +41,16 @@ hook.Add( "OnEntityCreated", "!!!_zz_laati_vtol_stuff", function( ent )
 				GravHull.UpdateHull(ent,1, ent:GetUp())
 
 				ent.Use = function(ent, ply )
+					if not IsValid( ply ) then return end
 					ply.lfsEnterVehicleTime = CurTime() + 0.1
+
+					if ent:GetlfsLockedStatus() or (simfphys.LFS.TeamPassenger:GetBool() and ((ent:GetAITEAM() ~= ply:lfsGetAITeam()) and ply:lfsGetAITeam() ~= 0 and ent:GetAITEAM() ~= 0)) then 
+
+						ent:EmitSound( "doors/default_locked.wav" )
+
+						return
+					end
+
 					ent:SetPassenger( ply )
 				end
 				
