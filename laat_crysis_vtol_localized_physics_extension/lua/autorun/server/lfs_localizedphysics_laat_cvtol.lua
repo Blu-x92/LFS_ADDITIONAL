@@ -32,8 +32,6 @@ hook.Add( "OnEntityCreated", "!!!_zz_laati_vtol_stuff", function( ent )
 			return
 		end
 
-		table.insert(CheckVehicle, ent)
-
 		timer.Simple(FrameTime() * 2, 
 			function()
 				if not IsValid( ent ) then return end
@@ -116,6 +114,8 @@ hook.Add( "OnEntityCreated", "!!!_zz_laati_vtol_stuff", function( ent )
 						GravHull.RegisterHull(ent,0,100)
 						GravHull.UpdateHull(ent,1, ent:GetUp())
 					end
+
+					table.insert(CheckVehicle, ent)
 				end
 
 				if CLASS:lower() == "lfs_crysis_vtol" then
@@ -138,6 +138,8 @@ hook.Add( "OnEntityCreated", "!!!_zz_laati_vtol_stuff", function( ent )
 						GravHull.RegisterHull(ent,0,100)
 						GravHull.UpdateHull(ent,1, ent:GetUp())
 					end
+
+					table.insert(CheckVehicle, ent)
 				end
 			end
 		)
