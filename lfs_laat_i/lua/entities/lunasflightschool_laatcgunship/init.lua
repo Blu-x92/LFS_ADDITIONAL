@@ -363,8 +363,11 @@ function ENT:Grabber()
 			
 			self.PICKUP_ENT = NULL
 			local Dist = 1000
-			
-			for k, v in pairs( ents.FindInSphere( StartPos, 150 ) ) do
+			local SphereRadius = 150
+
+			if istable( GravHull ) then SphereRadius = 300 end
+
+			for k, v in pairs( ents.FindInSphere( StartPos, SphereRadius ) ) do
 				if v.LAATC_PICKUPABLE then
 
 					local Len = (StartPos - v:GetPos()):Length()
