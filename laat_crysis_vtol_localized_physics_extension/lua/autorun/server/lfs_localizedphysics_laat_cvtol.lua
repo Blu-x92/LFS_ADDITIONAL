@@ -20,19 +20,20 @@ end)
 hook.Add( "OnEntityCreated", "!!!_zz_laati_vtol_stuff", function( ent )
 	if not IsValid( ent ) then return end
 
-	if not GravHull then 
-		print("[LFS] localphysics extension requires gravity hull designator to work")
-		print("[LFS] Get (Official) Gravity Hull Designator - Localized Physics Addon:")
-		print("[LFS] https://steamcommunity.com/sharedfiles/filedetails/?id=531849338")
-		
-		return
-	end
-
 	local CLASS = ent:GetClass()
 
-	table.insert(CheckVehicle, ent)
-
 	if LFS_LOCALPHYSICS_CLASSES[ CLASS ] then
+
+		if not GravHull then 
+			print("[LFS] localphysics extension requires gravity hull designator to work")
+			print("[LFS] Get (Official) Gravity Hull Designator - Localized Physics Addon:")
+			print("[LFS] https://steamcommunity.com/sharedfiles/filedetails/?id=531849338")
+			
+			return
+		end
+
+		table.insert(CheckVehicle, ent)
+
 		timer.Simple(FrameTime() * 2, 
 			function()
 				if not IsValid( ent ) then return end
