@@ -15,6 +15,14 @@ ENT.LFS = true
 
 ENT.MDL = "models/blu/vulturedroid.mdl"
 
+ENT.GibModels = {
+	"models/salza/vd_gib1.mdl",
+	"models/salza/vd_gib2.mdl",
+	"models/salza/vd_gib3.mdl",
+	"models/salza/vd_gib4.mdl",
+	"models/salza/vd_gib5.mdl",
+}
+
 ENT.AITEAM = 1
 
 ENT.Mass = 2000
