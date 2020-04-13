@@ -333,7 +333,7 @@ end
 
 function ENT:DamageFX()
 	local HP = self:GetHP()
-	if HP == 0 or HP > self:GetMaxHP() * 0.5 then return end
+	if HP <= 0 or HP > self:GetMaxHP() * 0.5 then return end
 	
 	self.nextDFX = self.nextDFX or 0
 	
