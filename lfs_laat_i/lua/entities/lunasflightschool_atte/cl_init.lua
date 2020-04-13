@@ -27,14 +27,14 @@ function ENT:DamageFX()
 		util.Effect( "lfs_blacksmoke", effectdata )
 
 		if HP <= 500 then
-			if math.random(0,25) < 3 then
+			if math.random(0,45) < 3 then
 				if math.random(1,2) == 1 then
 					local Pos = self:LocalToWorld( Vector(0,0,70) + VectorRand() * 80 )
 					local effectdata = EffectData()
 						effectdata:SetOrigin( Pos )
 					util.Effect( "cball_explode", effectdata, true, true )
 					
-					sound.Play( "lfs/laatc_atte/spark"..math.random(1,4)..".ogg", Pos, 90 )
+					sound.Play( "lfs/laatc_atte/spark"..math.random(1,4)..".ogg", Pos, 75 )
 				end
 			end
 		end
