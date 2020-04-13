@@ -15,7 +15,7 @@ include("cl_ikfunctions.lua")
 
 function ENT:DamageFX()
 	local HP = self:GetHP()
-	if HP == 0 or HP > self:GetMaxHP() * 0.5 then return end
+	if HP > self:GetMaxHP() * 0.5 then return end
 	
 	self.nextDFX = self.nextDFX or 0
 	
@@ -25,6 +25,19 @@ function ENT:DamageFX()
 		local effectdata = EffectData()
 			effectdata:SetOrigin( self:LocalToWorld( Vector(0,0,160) ) )
 		util.Effect( "lfs_blacksmoke", effectdata )
+
+		if HP <= 500 then
+			if math.random(0,25) < 3 then
+				if math.random(1,2) == 1 then
+					local Pos = self:LocalToWorld( Vector(0,0,70) + VectorRand() * 80 )
+					local effectdata = EffectData()
+						effectdata:SetOrigin( Pos )
+					util.Effect( "cball_explode", effectdata, true, true )
+					
+					sound.Play( "lfs/laatc_atte/spark"..math.random(1,4)..".ogg", Pos, 90 )
+				end
+			end
+		end
 	end
 end
 
@@ -282,11 +295,18 @@ local GroupCollide = {
 
 function ENT:Think()
 	self:DamageFX()
-	
+
 	local RearEnt = self:GetRearEnt()
-	
+
 	if not IsValid( RearEnt ) then return end
-	
+
+	if self:GetDieRagdoll() then 
+		self:LegClearAll()
+		RearEnt:LegClearAll()
+
+		return
+	end
+
 	local Up = self:GetUp()
 	local Forward = self:GetForward()
 	local Vel = self:GetVelocity()

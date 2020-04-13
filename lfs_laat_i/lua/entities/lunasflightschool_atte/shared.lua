@@ -47,7 +47,7 @@ ENT.Mass = 5000
 ENT.SeatPos = Vector(218,0,148)
 ENT.SeatAng = Angle(0,-90,0)
 
-ENT.MaxHealth = 10000
+ENT.MaxHealth = 10500
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Entity",22, "RearEnt" )
@@ -61,6 +61,7 @@ function ENT:AddDataTables()
 	self:NetworkVar( "Bool",20, "IsCarried" )
 	self:NetworkVar( "Bool",21, "FrontInRange" )
 	self:NetworkVar( "Bool",22, "RearInRange" )
+	self:NetworkVar( "Bool",23, "DieRagdoll" )
 end
 
 sound.Add( {
@@ -88,6 +89,15 @@ sound.Add( {
 	level = 90,
 	pitch = 100,
 	sound = "lfs/laatc_atte/overheat.mp3"
+} )
+
+sound.Add( {
+	name = "LAATc_ATTE_BECOMERAGDOLL",
+	channel = CHAN_STATIC,
+	volume = 1.0,
+	level = 100,
+	pitch = 100,
+	sound = "lfs/laatc_atte/becomeragdoll.ogg"
 } )
 
 sound.Add( {
