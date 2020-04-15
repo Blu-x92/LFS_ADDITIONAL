@@ -113,7 +113,7 @@ function ENT:RunOnSpawn()
 	self:SetGunnerSeat( GunnerSeat )
 
 	for i =1,4 do
-		self:AddPassengerSeat( Vector(100,0,150), Angle(0,-90,0) )
+		self:AddPassengerSeat( Vector(75,-62.5 + i * 25,150), Angle(0,-90,0) )
 	end
 end
 
@@ -323,6 +323,34 @@ function ENT:VeryLowTick()
 	return FrameTime() > (1 / 30)
 end
 
+function ENT:OnIsCarried( name, old, new)
+	if new == old then return end
+
+	if new then
+		if istable( self.Constrainer ) then
+			for k, v in pairs( self.Constrainer ) do
+				if IsValid( v ) then
+					if v ~= self and v ~= self:GetRearEnt() then
+						local PhysObj = v:GetPhysicsObject()
+						if IsValid( PhysObj ) then
+							PhysObj:EnableMotion( false )
+							v:SetPos( v:GetPos() + self:GetUp() * 100 )
+							timer.Simple( FrameTime() * 2, function()
+								if not IsValid( v ) then return end
+
+								local PhysObj = v:GetPhysicsObject()
+								if IsValid( PhysObj ) then
+									PhysObj:EnableMotion( true )
+								end
+							end)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 function ENT:OnTick()
 
 	if self:GetAI() then self:SetAI( false ) end
@@ -348,16 +376,16 @@ function ENT:OnTick()
 				end
 			end
 		end
-		
+
 		self.sm_ppmg_pitch = 0
 		self.sm_ppmg_yaw = 180
 
 		self:SetPoseParameter("cannon_pitch", 0 )
 		self:SetPoseParameter("cannon_yaw", 180 )
-		
+
 		self:SetFrontInRange( false )
 		self:SetRearInRange( false )
-		
+
 		return
 	end
 
@@ -767,6 +795,8 @@ function ENT:UnRagdoll()
 				end
 			end
 		end
+
+		self.Constrainer = nil
 	end
 
 	self.DoNotDuplicate = false

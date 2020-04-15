@@ -62,6 +62,10 @@ function ENT:AddDataTables()
 	self:NetworkVar( "Bool",21, "FrontInRange" )
 	self:NetworkVar( "Bool",22, "RearInRange" )
 	self:NetworkVar( "Bool",23, "DieRagdoll" )
+
+	if SERVER then
+		self:NetworkVarNotify( "IsCarried", self.OnIsCarried )
+	end
 end
 
 sound.Add( {
