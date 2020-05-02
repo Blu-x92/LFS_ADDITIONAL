@@ -73,6 +73,8 @@ function ENT:RunOnSpawn()
 	self:SetPoseParameter("ballturret_left_yaw", -70 )
 	self:SetPoseParameter("ballturret_right_pitch", 0 )
 	self:SetPoseParameter("ballturret_right_yaw", -70 )
+
+	self:OnBallturretMounted( self:GetBodygroup(4) == 0, nil )
 end
 
 function ENT:PrimaryAttack()
