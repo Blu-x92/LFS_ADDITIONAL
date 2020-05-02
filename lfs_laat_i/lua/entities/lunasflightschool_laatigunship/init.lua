@@ -59,16 +59,20 @@ function ENT:RunOnSpawn()
 		end
 	end
 	
-	
 	self:AddPassengerSeat( Vector(95,0,15), Angle(0,90,0) ).ExitPos = Vector(75,0,36)
 	
 	for i = 0, 5 do
 		local X = i * 35
 		local Y = 30 - i * 3
 		
-		self:AddPassengerSeat( Vector(20 - X,Y,10), Angle(0,0,0) ).ExitPos = Vector(20 - X,25,30)
-		self:AddPassengerSeat( Vector(20 - X,-Y,10), Angle(0,180,0) ).ExitPos = Vector(20 - X,-25,30)
+		self:AddPassengerSeat( Vector(10 - X,Y,10), Angle(0,0,0) ).ExitPos = Vector(10 - X,25,33)
+		self:AddPassengerSeat( Vector(10 - X,-Y,10), Angle(0,180,0) ).ExitPos = Vector(10 - X,-25,33)
 	end
+
+	self:SetPoseParameter("ballturret_left_pitch", 0 )
+	self:SetPoseParameter("ballturret_left_yaw", -70 )
+	self:SetPoseParameter("ballturret_right_pitch", 0 )
+	self:SetPoseParameter("ballturret_right_yaw", -70 )
 end
 
 function ENT:PrimaryAttack()
@@ -331,12 +335,96 @@ function ENT:OnLandingGearToggled( bOn )
 	end
 end
 
+function ENT:OnBallturretMounted( ismounted, oldvar )
+	if ismounted == oldvar then return end
+
+	if ismounted then
+		if IsValid( self.BTPodR_ent_orig ) then 
+			self:SetBTPodR( self.BTPodR_ent_orig )
+			self.BTPodR_ent_orig:SetNWInt( "pPodIndex", self.BTPodR_index_orig )
+		end
+
+		if IsValid( self.BTPodL_ent_orig ) then 
+			self:SetBTPodL( self.BTPodL_ent_orig )
+			self.BTPodL_ent_orig:SetNWInt( "pPodIndex", self.BTPodL_index_orig )
+		end
+	else
+		local Pod_R = self:GetBTPodR()
+		if IsValid( Pod_R ) then 
+			self.BTPodR_ent_orig = Pod_R
+			self.BTPodR_index_orig = Pod_R:GetNWInt( "pPodIndex" )
+			Pod_R:SetNWInt( "pPodIndex", -1 )
+		end
+
+		local Pod_L = self:GetBTPodL()
+		if IsValid( Pod_L ) then 
+			self.BTPodL_ent_orig = Pod_L
+			self.BTPodL_index_orig = Pod_L:GetNWInt( "pPodIndex" )
+			Pod_L:SetNWInt( "pPodIndex", -1 )
+		end
+
+		local Gunner_R = self:GetBTGunnerR()
+		if IsValid( Gunner_R ) then
+			Gunner_R:ExitVehicle()
+		end
+
+		local Gunner_L = self:GetBTGunnerL()
+		if IsValid( Gunner_L ) then
+			Gunner_L:ExitVehicle()
+		end
+
+		self:SetBTPodR( NULL )
+		self:SetBTRFire( false )
+		self:SetBTGunnerR( NULL )
+		
+		self:SetBTPodL( NULL )
+		self:SetBTLFire( false )
+		self:SetBTGunnerL( NULL )
+	end
+end
+
+function ENT:GetPassengerSeats()
+	if not istable( self.pSeats ) then
+		self.pSeats = {}
+		
+		local DriverSeat = self:GetDriverSeat()
+
+		for _, v in pairs( self:GetChildren() ) do
+			if v ~= DriverSeat and v:GetClass():lower() == "prop_vehicle_prisoner_pod" then
+				table.insert( self.pSeats, v )
+			end
+		end
+	end
+
+	if self:GetBodygroup(4) == 1 then
+		local pSeats = table.Copy( self.pSeats )
+
+		for k, v in pairs( pSeats ) do
+			if v == self.BTPodR_ent_orig or v == self.BTPodL_ent_orig then
+				pSeats[k] = nil
+			end
+		end
+
+		return pSeats
+	else
+		return self.pSeats
+	end
+end
+
 function ENT:OnTick()
 	do
 		local DoorMode = self:GetDoorMode()
 		local TargetValue = DoorMode >= 1 and 1 or 0
 		self.SDsm = isnumber( self.SDsm ) and (self.SDsm + math.Clamp((TargetValue - self.SDsm) * 5,-1,2) * FrameTime() ) or 0
 		self:SetPoseParameter("sidedoor_extentions", self.SDsm )
+	end
+
+	local BTbodygroup = self:GetBodygroup(4)
+
+	if BTbodygroup ~= self.oldBTbodygroup then
+		self:OnBallturretMounted( BTbodygroup == 0, self.oldBTbodygroup == 0 )
+
+		self.oldBTbodygroup = BTbodygroup
 	end
 
 	do

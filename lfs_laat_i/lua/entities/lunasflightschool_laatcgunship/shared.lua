@@ -47,7 +47,7 @@ ENT.MaxVelocity = 2400
 ENT.MaxThrust = 5000
 
 ENT.VerticalTakeoff = true
-ENT.VtolAllowInputBelowThrottle = 100
+ENT.VtolAllowInputBelowThrottle = 101
 ENT.MaxThrustVtol = 400
 
 --ENT.MaxShield = 200
