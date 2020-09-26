@@ -65,7 +65,7 @@ if SERVER then
 	function ENT:ProjDetonate()
 		local Inflictor = self:GetInflictor()
 		local Attacker = self:GetAttacker()
-		util.BlastDamage( IsValid( Inflictor ) and Inflictor or Entity(0), IsValid( Attacker ) and Attacker or Entity(0), self:GetPos(),300,80)
+		util.BlastDamage( IsValid( Inflictor ) and Inflictor or Entity(0), IsValid( Attacker ) and Attacker or Entity(0), self:GetPos(),300,100)
 
 		local effectdata = EffectData()
 			effectdata:SetOrigin( self:GetPos() )
