@@ -23,7 +23,7 @@ ENT.AdminSpawnable	= false
 ENT.MDL = "models/blu/iftx.mdl"
 
 ENT.MaxPrimaryAmmo = 600
-ENT.MaxSecondaryAmmo = 50
+ENT.MaxSecondaryAmmo = 60
 
 ENT.AITEAM = 2
 
