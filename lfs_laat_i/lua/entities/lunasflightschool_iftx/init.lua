@@ -459,6 +459,7 @@ function ENT:InitWheels() -- technically where the hover magic happens
 			WpObj:SetBuoyancyRatio( 100 )
 			
 			self:DeleteOnRemove( wheel )
+			wheel:DeleteOnRemove( self )
 			self:dOwner( wheel )
 			
 			self:dOwner( constraint.AdvBallsocket(wheel, self,0,0,Vector(0,0,0),Vector(0,0,0),0,0, -180, -180, -180, 180, 180, 180, 0, 0, 0, 0, 1) )
