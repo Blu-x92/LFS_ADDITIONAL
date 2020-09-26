@@ -115,7 +115,7 @@ function ENT:SecondaryAttack()
 	end
 end
 
-function ENT:FireTurret()
+function ENT:FireTurret( Driver )
 	if self:GetIsCarried() then return end
 	if not self:CanAltPrimaryAttack() then return end
 
@@ -137,7 +137,7 @@ function ENT:FireTurret()
 	bullet.Force	= 5
 	bullet.HullSize 	= 1
 	bullet.Damage	= 35
-	bullet.Attacker 	= self:GetDriver()
+	bullet.Attacker 	= Driver
 	bullet.AmmoType = "Pistol"
 	bullet.Callback = function(att, tr, dmginfo)
 		dmginfo:SetDamageType(DMG_AIRBOAT)
@@ -368,7 +368,7 @@ end
 				end
 			else
 				if Driver:KeyDown( IN_ATTACK ) then
-					self:FireTurret()
+					self:FireTurret( Driver )
 				end
 			end
 		end
