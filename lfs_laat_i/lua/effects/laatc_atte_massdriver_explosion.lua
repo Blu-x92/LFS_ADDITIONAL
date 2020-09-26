@@ -92,7 +92,9 @@ function EFFECT:Explosion( pos )
 			particle:SetCollide( false )
 		end
 	end
-	
+
+	emitter:Finish()
+
 	local dlight = DynamicLight( math.random(0,9999) )
 	if dlight then
 		dlight.pos = pos
