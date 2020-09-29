@@ -31,9 +31,11 @@ if SERVER then
 			pObj:SetVelocityInstantaneous( (self:GetForward() + self.smv) * 8000 )
 		end
 
+		local Vel = self:GetVelocity()
+
 		local trace = util.TraceLine( {
 			start = self:GetPos(),
-			endpos = self:GetPos() + self:GetForward() * (self:GetVelocity():Length() * FrameTime() + 25),
+			endpos = self:GetPos() + Vel:GetNormalized() * (Vel:Length() * FrameTime() + 25),
 			filter = {self,self:GetInflictor()}
 		} )
 
@@ -48,9 +50,10 @@ if SERVER then
 		self:SetModel( "models/weapons/w_missile_launch.mdl" )
 		self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
-		self:SetSolid( SOLID_NONE )
+		self:SetSolid( SOLID_VPHYSICS )
 		self:SetRenderMode( RENDERMODE_TRANSALPHA )
 		self:PhysWake()
+		self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 		
 		local pObj = self:GetPhysicsObject()
 		
@@ -65,7 +68,7 @@ if SERVER then
 	function ENT:ProjDetonate()
 		local Inflictor = self:GetInflictor()
 		local Attacker = self:GetAttacker()
-		util.BlastDamage( IsValid( Inflictor ) and Inflictor or Entity(0), IsValid( Attacker ) and Attacker or Entity(0), self:GetPos(),300,100)
+		util.BlastDamage( IsValid( Inflictor ) and Inflictor or Entity(0), IsValid( Attacker ) and Attacker or Entity(0), self:GetPos(),250,150)
 
 		local effectdata = EffectData()
 			effectdata:SetOrigin( self:GetPos() )
@@ -126,6 +129,7 @@ if SERVER then
 	end
 
 	function ENT:PhysicsCollide( data )
+		self.Explode = true
 	end
 
 	function ENT:OnTakeDamage( dmginfo )	
