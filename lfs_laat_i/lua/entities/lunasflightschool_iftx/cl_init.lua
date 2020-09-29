@@ -160,7 +160,7 @@ function ENT:AnimCabin()
 		if Fire then
 			self:EmitSound("LAATi_BT_FIRE")
 			
-			self.BTLLOOP = CreateSound( self, "LAATi_BT_FIRE_LOOP_CHAN3" )
+			self.BTLLOOP = CreateSound( self, "LAATi_BT_FIRE_LOOP_CHAN1" )
 			self.BTLLOOP:Play()
 			
 			local effectdata = EffectData()

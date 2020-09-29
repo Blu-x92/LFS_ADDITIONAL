@@ -530,6 +530,11 @@ function ENT:InWater()
 	return false
 end
 
+function ENT:OnLandingGearToggled( bOn )
+	self:SetBodygroup(2, (self:GetBodygroup(2) == 1) and 0 or 1 )
+	self:EmitSound( "items/flashlight1.wav" )
+end
+
 function ENT:HitGround()
 	if not istable( self.FilterEnts ) then return false end
 

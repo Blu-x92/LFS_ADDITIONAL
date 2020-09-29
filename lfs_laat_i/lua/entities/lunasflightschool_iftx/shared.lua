@@ -78,7 +78,7 @@ end
 
 sound.Add( {
 	name = "LAATc_IFTX_FIRE",
-	channel = CHAN_WEAPON,
+	channel = CHAN_VOICE,
 	volume = 1.0,
 	level = 125,
 	pitch = {95, 105},
@@ -96,7 +96,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "LAATc_IFTX_FIRE_MISSILE",
-	channel = CHAN_VOICE,
+	channel = CHAN_VOICE2,
 	volume = 1.0,
 	level = 125,
 	pitch = {95, 105},
