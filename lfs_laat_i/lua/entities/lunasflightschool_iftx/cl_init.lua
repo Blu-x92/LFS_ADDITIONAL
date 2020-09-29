@@ -13,10 +13,7 @@ include("shared.lua")
 
 function ENT:LFSCalcViewFirstPerson( view, ply )
 	if ply == self:GetDriver() then
-		local Pod = self:GetDriverSeat()
-		if IsValid( Pod ) then
-			Pod:SetThirdPersonMode( true )
-		end
+		view.origin = self:LocalToWorld( Vector(0,0,50) )
 	end
 
 	return view
