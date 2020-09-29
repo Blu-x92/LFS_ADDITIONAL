@@ -32,9 +32,11 @@ if SERVER then
 			pObj:SetVelocityInstantaneous( self:GetForward() * (self:GetStartVelocity() + 3000) )
 		end
 
+		local Vel = self:GetVelocity()
+
 		local trace = util.TraceLine( {
 			start = self:GetPos(),
-			endpos = self:GetPos() + self:GetForward() * (self:GetVelocity():Length() * FrameTime() + 25),
+			endpos = self:GetPos() + Vel:GetNormalized() * (Vel:Length() * FrameTime() + 25),
 			filter = {self,self:GetInflictor(), self:GetRearEnt()}
 		} )
 
@@ -66,7 +68,7 @@ if SERVER then
 	function ENT:ProjDetonate()
 		local Inflictor = self:GetInflictor()
 		local Attacker = self:GetAttacker()
-		util.BlastDamage( IsValid( Inflictor ) and Inflictor or Entity(0), IsValid( Attacker ) and Attacker or Entity(0), self:GetPos(),500,200)
+		util.BlastDamage( IsValid( Inflictor ) and Inflictor or Entity(0), IsValid( Attacker ) and Attacker or Entity(0), self:GetPos(),250,400)
 
 		local effectdata = EffectData()
 			effectdata:SetOrigin( self:GetPos() )
