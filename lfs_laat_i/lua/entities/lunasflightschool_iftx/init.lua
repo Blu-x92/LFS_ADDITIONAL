@@ -145,6 +145,30 @@ function ENT:FireTurret( Driver )
 	self:FireBullets( bullet )
 end
 
+function ENT:PhysicsCollide( data, physobj )
+	if self:IsDestroyed() then
+		self.MarkForDestruction = true
+	end
+	
+	if IsValid( data.HitEntity ) then
+		if data.HitEntity:IsPlayer() or data.HitEntity:IsNPC() or simfphys.LFS.CollisionFilter[ data.HitEntity:GetClass():lower() ] then
+			return
+		end
+	end
+
+	if self:WorldToLocal( data.HitPos ).z > 0 then -- no collision sound when the lower part of the model touches the ground
+		if data.Speed > 60 and data.DeltaTime > 0.2 then
+			if data.Speed > 500 then
+				self:EmitSound( "Airboat_impact_hard" )
+				
+				self:TakeDamage( 400, data.HitEntity, data.HitEntity )
+			else
+				self:EmitSound( "MetalVehicle.ImpactSoft" )
+			end
+		end
+	end
+end
+
 function ENT:SetNextAltPrimary( delay )
 	self.NextAltPrimary = CurTime() + delay
 end
@@ -161,7 +185,14 @@ function ENT:MainGunPoser( EyeAngles )
 		endpos = (startpos + EyeAngles:Forward() * 50000),
 		mins = Vector( -10, -10, -10 ),
 		maxs = Vector( 10, 10, 10 ),
-		filter = self
+		filter = function( ent ) 
+			if IsValid( ent ) then
+				if ent == self or ent:GetClass() == "lfs_iftx_missile" then 
+					return false
+				end
+			end
+			return true
+		end
 	} )
 
 	local AimAnglesR = self:WorldToLocalAngles( (TracePlane.HitPos - self:LocalToWorld( Vector(-60,-51,43) ) ):GetNormalized():Angle() )
@@ -416,17 +447,17 @@ function ENT:InitWheels() -- technically where the hover magic happens
 	self.FilterEnts = { self }
 
 	local Wheels = {
-		Vector(-85,-68,-14),
-		Vector(-5,-68,-13),
-		Vector(80,-68,-10),
+		Vector(-85,-60,-12),
+		Vector(-5,-60,-11),
+		Vector(80,-60,-8),
 
-		Vector(-85,68,-14),
-		Vector(-5,68,-13),
-		Vector(80,68,-10),
+		Vector(-85,60,-12),
+		Vector(-5,60,-11),
+		Vector(80,60,-8),
 	}
 
 	local mass = 25
-	local radius = 15
+	local radius = 14
 
 	for _, pos in pairs( Wheels ) do
 		local wheel = ents.Create( "prop_physics" )
