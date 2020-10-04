@@ -76,6 +76,7 @@ end
 
 
 function ENT:SecondaryAttack()
+	if self:GetIsCarried() then return end
 	if self:GetAI() then return end
 	
 	if not self:CanSecondaryAttack() then return end
