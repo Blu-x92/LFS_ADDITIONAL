@@ -106,5 +106,5 @@ function EFFECT:Render()
 	local Scale = (self.DieTime - CurTime()) / self.LifeTime
 	render.SetMaterial( self.mat )
 	render.DrawSprite( self.Pos, 400 * Scale, 400 * Scale, Color( 0, 127, 255, 255) )
-	render.DrawSprite( self.Pos, 800 * Scale, 800 * Scale, Color( 255, 200, 150, 255) )
+	render.DrawSprite( self.Pos, 100 * Scale, 100 * Scale, Color( 255, 255, 255, 255) )
 end
