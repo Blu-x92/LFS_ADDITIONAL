@@ -488,7 +488,7 @@ function ENT:InitWheels() -- technically where the hover magic happens
 
 			WpObj:EnableMotion(false)
 			WpObj:SetMass( mass )
-			WpObj:SetBuoyancyRatio( 100 )
+			WpObj:SetBuoyancyRatio( 10 )
 			
 			self:DeleteOnRemove( wheel )
 			wheel:DeleteOnRemove( self )
