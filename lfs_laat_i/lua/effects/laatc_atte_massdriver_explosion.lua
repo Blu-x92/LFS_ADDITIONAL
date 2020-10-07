@@ -94,18 +94,6 @@ function EFFECT:Explosion( pos )
 	end
 
 	emitter:Finish()
-
-	local dlight = DynamicLight( math.random(0,9999) )
-	if dlight then
-		dlight.pos = pos
-		dlight.r = 255
-		dlight.g = 180
-		dlight.b = 100
-		dlight.brightness = 8
-		dlight.Decay = 2000
-		dlight.Size = 200
-		dlight.DieTime = CurTime() + 0.1
-	end
 end
 
 function EFFECT:Think()
@@ -118,5 +106,5 @@ function EFFECT:Render()
 	local Scale = (self.DieTime - CurTime()) / self.LifeTime
 	render.SetMaterial( self.mat )
 	render.DrawSprite( self.Pos, 400 * Scale, 400 * Scale, Color( 0, 127, 255, 255) )
-	render.DrawSprite( self.Pos, 100 * Scale, 100 * Scale, Color( 255, 255, 255, 255) )
+	render.DrawSprite( self.Pos, 800 * Scale, 800 * Scale, Color( 255, 200, 150, 255) )
 end
