@@ -81,8 +81,10 @@ function ENT:Initialize() -- overwriting initialize function is bad and a big no
 	self:SetRearEnt( ent )
 	
 	PObj:SetMass( self.Mass ) 
-	
-	local ballsocket = constraint.AdvBallsocket(ent, self,0,0,Vector(35,0,128),Vector(35,0,128),0,0, -20, -20, -20, 20, 20, 20, 0, 0, 0, 0, 1)
+
+	local Friction = FrameTime() > (1 / 15) and 5 or 0
+
+	local ballsocket = constraint.AdvBallsocket(ent, self,0,0,Vector(35,0,128),Vector(35,0,128),0,0, -20, -20, -20, 20, 20, 20, Friction, Friction, Friction, 0, 1)
 	self:dOwner( ballsocket )
 	ballsocket.DoNotDuplicate = true
 

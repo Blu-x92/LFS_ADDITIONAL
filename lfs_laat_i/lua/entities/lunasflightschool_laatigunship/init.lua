@@ -75,6 +75,20 @@ function ENT:RunOnSpawn()
 	self:SetPoseParameter("ballturret_right_yaw", -70 )
 
 	self:OnBallturretMounted( self:GetBodygroup(4) == 0, nil )
+
+	if FrameTime() > 0.067 then
+		self.MaxTurnPitch = 70
+		self.MaxTurnYaw = 70
+		self.MaxTurnRoll = 70
+
+		self.PitchDamping = 1
+		self.YawDamping = 1
+		self.RollDamping = 1
+
+		self.TurnForcePitch = 3000
+		self.TurnForceYaw = 3000
+		self.TurnForceRoll = 400
+	end
 end
 
 function ENT:PrimaryAttack()
