@@ -98,7 +98,15 @@ function ENT:LFSCalcViewThirdPerson( view, ply, FirstPerson )
 	if ply == self:GetTurretDriver() then
 		local radius = 800
 		radius = radius + radius * Pod:GetCameraDistance()
+
+		local Zoom = ply:KeyDown( IN_ATTACK2 ) or ply:KeyDown( IN_ZOOM )
+		local Rate = FrameTime() * 5
 		
+		self.InterPoL = isnumber( self.InterPoL ) and self.InterPoL + math.Clamp((Zoom and 1 or 0) - self.InterPoL,-Rate,Rate) or 0
+		view.fov = 75 - 30 * self.InterPoL
+
+		radius = radius * (1 - self.InterPoL) + 200 * self.InterPoL
+
 		local StartPos = self:LocalToWorld( Vector(94.13,0,216.8) ) + view.angles:Up() * 100
 		local EndPos = StartPos - view.angles:Forward() * radius
 		
@@ -280,6 +288,27 @@ function ENT:LFSHudPaintPassenger( X, Y, ply )
 			surface.DrawLine( X - 9, Y + 1, X - 16, Y + 1 ) 
 			surface.DrawLine( X + 1, Y + 11, X + 1, Y + 21 ) 
 			surface.DrawLine( X + 1, Y - 19, X + 1, Y - 16 ) 
+
+			local heat = (self:GetTurretHeat() / 100)
+			if heat > 0.01 then
+				local sX = 70
+				local sY = 6
+				X = X - sX * 0.5
+				Y = Y + 25
+
+				surface.SetDrawColor(0,0,0,255)
+				surface.DrawRect(X - 1, Y - 1, sX + 2, sY + 2)
+
+				surface.SetDrawColor(150,150,150,100)
+				surface.DrawRect(X, Y, sX, sY)
+
+				surface.SetDrawColor(255,255,255,255)
+				surface.DrawRect(X, Y, sX * math.min(heat,1), sY)
+				if heat > 1 then
+					surface.SetDrawColor(255,0,0,255)
+					surface.DrawRect(X + sX, Y, sX * math.min(heat - 1,1), sY)
+				end
+			end
 		end
 	end
 end

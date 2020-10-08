@@ -38,7 +38,7 @@ ENT.GibModels = {
 }
 
 ENT.MaxPrimaryAmmo = 1000
-ENT.MaxSecondaryAmmo = 54
+ENT.MaxSecondaryAmmo = 100
 
 ENT.AITEAM = 2
 
@@ -47,7 +47,7 @@ ENT.Mass = 5000
 ENT.SeatPos = Vector(218,0,148)
 ENT.SeatAng = Angle(0,-90,0)
 
-ENT.MaxHealth = 10500
+ENT.MaxHealth = 12000
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Entity",22, "RearEnt" )
@@ -56,6 +56,7 @@ function ENT:AddDataTables()
 	self:NetworkVar( "Entity",24, "TurretSeat" )
 	
 	self:NetworkVar( "Float",22, "Move" )
+	self:NetworkVar( "Float",23, "TurretHeat" )
 
 	self:NetworkVar( "Bool",19, "IsMoving" )
 	self:NetworkVar( "Bool",20, "IsCarried" )

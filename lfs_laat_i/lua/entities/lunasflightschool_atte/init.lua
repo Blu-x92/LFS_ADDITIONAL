@@ -354,7 +354,7 @@ end
 function ENT:OnTick()
 
 	if self:GetAI() then self:SetAI( false ) end
-	if self:GetDieRagdoll() and self:GetHP() > 500 then self:UnRagdoll() end
+	if self:GetDieRagdoll() and self:GetHP() > 2000 then self:UnRagdoll() end
 
 	local ATTE = {self,self:GetRearEnt()}
 	
@@ -452,6 +452,7 @@ function ENT:OnTick()
 		
 		self:GunnerWeapons( self:GetRearEnt(), self:GetGunner(), self:GetGunnerSeat() )
 		self:Turret( self:GetTurretDriver(), TurretPod )
+		self:SetTurretHeat( math.max(self:GetTurretHeat() - 30 * FrameTime(),0) )
 
 		return
 	end
@@ -618,6 +619,7 @@ function ENT:OnTick()
 	
 	self:GunnerWeapons( self:GetRearEnt(), self:GetGunner(), self:GetGunnerSeat() )
 	self:Turret( self:GetTurretDriver(), TurretPod )
+	self:SetTurretHeat( math.max(self:GetTurretHeat() - 30 * FrameTime(),0) )
 end
 
 function ENT:Turret( Driver, Pod )
@@ -656,12 +658,6 @@ function ENT:Turret( Driver, Pod )
 	if KeyAttack then
 		self:FireTurret( Driver )
 	end
-	
-	if (self.cFireIndex or 0) > 0 and Driver:KeyDown( IN_RELOAD ) then
-		self.cFireIndex = 0
-		self:SetNextSecondary( 2 )
-		Pod:EmitSound("LAATc_ATTE_CANNONRELOAD")
-	end
 end
 
 function ENT:CanSecondaryAttack()
@@ -672,23 +668,20 @@ end
 
 function ENT:FireTurret()
 	if not self:CanSecondaryAttack() then return end
-	
-	self:SetNextSecondary( 0.5 )
-	
-	self.cFireIndex = self.cFireIndex and self.cFireIndex + 1 or 1
-	if self.cFireIndex >= 3 then
-		self.cFireIndex = 0
-		self:SetNextSecondary( 2 )
-		timer.Simple(0.2, function()
-			if not IsValid( self ) then return end
-			
-			local Pod = self:GetTurretSeat()
-			if not IsValid( Pod ) then return end
-			
+
+	if self:GetTurretHeat() >= 100 then
+		self:SetNextSecondary( 4 )
+
+		local Pod = self:GetTurretSeat()
+		if IsValid( Pod ) then
 			Pod:EmitSound("LAATc_ATTE_CANNONRELOAD")
-		end )
+		end
+
+		return
 	end
-	
+
+	self:SetNextSecondary( 0.5 )
+
 	self:EmitSound( "LAATc_ATTE_CANNONFIRE" )
 	
 	local ID = self:LookupAttachment( "muzzle_cannon" )
@@ -714,6 +707,18 @@ function ENT:FireTurret()
 		self:TakeSecondaryAmmo()
 		
 		self:PlayAnimation( "fire_turret" )
+	end
+
+	self:SetTurretHeat( self:GetTurretHeat() + 50 )
+
+	if self:GetTurretHeat() >= 120 then
+		self:SetNextSecondary( 4 )
+
+		local Pod = self:GetTurretSeat()
+
+		if IsValid( Pod ) then
+			Pod:EmitSound("LAATc_ATTE_CANNONRELOAD")
+		end
 	end
 end
 
@@ -1023,7 +1028,7 @@ function ENT:OnTakeDamage( dmginfo )
 		self:SetHP( NewHealth )
 	end
 	
-	if NewHealth <= 500 and not (self:GetShield() > Damage and ShieldCanBlock) then
+	if NewHealth <= 2000 and not (self:GetShield() > Damage and ShieldCanBlock) then
 		if not self:GetDieRagdoll() then
 			self.FinalAttacker = dmginfo:GetAttacker() 
 			self.FinalInflictor = dmginfo:GetInflictor()
