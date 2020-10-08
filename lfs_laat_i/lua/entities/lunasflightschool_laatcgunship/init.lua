@@ -426,6 +426,10 @@ function ENT:GunnerWeapons( Driver, Pod )
 end
 
 function ENT:HitGround()
+	if IsValid( self:GetHeldEntity() ) then
+		return false
+	end
+
 	local tr = util.TraceLine( {
 		start = self:LocalToWorld( Vector(0,0,100) ),
 		endpos = self:LocalToWorld( Vector(0,0,-20) ),
@@ -435,7 +439,7 @@ function ENT:HitGround()
 			end
 		end
 	} )
-	
+
 	return tr.Hit 
 end
 
@@ -447,8 +451,10 @@ function ENT:CanDrop()
 			if ent == self or ent == self:GetHeldEntity() then 
 				return false
 			end
+
+			return true
 		end
 	} )
-	
+
 	return tr.Hit 
 end
