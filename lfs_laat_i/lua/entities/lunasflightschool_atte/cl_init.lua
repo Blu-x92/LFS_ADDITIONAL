@@ -26,7 +26,7 @@ function ENT:DamageFX()
 			effectdata:SetOrigin( self:LocalToWorld( Vector(0,0,160) ) )
 		util.Effect( "lfs_blacksmoke", effectdata )
 
-		if HP <= 500 then
+		if HP <= 2000 then
 			if math.random(0,45) < 3 then
 				if math.random(1,2) == 1 then
 					local Pos = self:LocalToWorld( Vector(0,0,70) + VectorRand() * 80 )
