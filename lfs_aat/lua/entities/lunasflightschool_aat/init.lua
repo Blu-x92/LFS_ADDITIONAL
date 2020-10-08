@@ -202,15 +202,6 @@ end
 function ENT:OnTick()
 	if self:GetAI() then self:SetAI( false ) end
 
-	local HasTurret = self:GetBodygroup(1) == 2 and not IsValid( self:GetGunner() )
-
-	local Rate = FrameTime() * 5
-	self.smHatch = self.smHatch and self.smHatch + math.Clamp((HasTurret and 1 or 0) - self.smHatch,-Rate,Rate) or 0
-
-	if not HasTurret and self.smHatch > 0.7 then self.smHatch = 0.7 end
-
-	self:SetPoseParameter( "close_hatch", self.smHatch )
-
 	local PhysObj = self:GetPhysicsObject()
 
 	if not IsValid( PhysObj ) then return end
@@ -278,7 +269,6 @@ function ENT:OnTick()
 	AngForce.y = AngForce.y * self.TurnForceYaw
 	AngForce.r = AngForce.r * self.TurnForceRoll
 
-
 	self:SetRPM( math.min(VelL:Length() / self.MaxVelocity,1) * 100 )
 
 	self:SetPoseParameter( "move_x", math.Clamp(-VelL.x / self.MaxVelocity,-1,1) )
@@ -292,6 +282,8 @@ function ENT:OnTick()
 	else
 		self:RotateTurret( self:GetAngles() )
 	end
+
+	self:SetTurretHeat( math.max(self:GetTurretHeat() - 25 * FrameTime(),0) )
 
 	if not self:HitGround() then return end
 
@@ -311,6 +303,12 @@ end
 function ENT:FireTurret( Driver )
 	if not self:CanAltPrimaryAttack() then return end
 
+	if self:GetTurretHeat() >= 100 then
+		self:SetNextAltPrimary( 6 )
+		self:EmitSound("lfs/aat/overheat.mp3")
+		return
+	end
+
 	local ID = self:LookupAttachment( "muzzle" )
 	local Muzzle = self:GetAttachment( ID )
 
@@ -318,27 +316,32 @@ function ENT:FireTurret( Driver )
 
 	self:PlayAnimation( "fire" )
 
-	self:SetNextAltPrimary( 1 )
+	self:SetNextAltPrimary( 0.3 )
 
 	if Muzzle then
-		local bullet = {}
-		bullet.Num 	= 1
-		bullet.Src 	= Muzzle.Pos
-		bullet.Dir 	= Muzzle.Ang:Up()
-		bullet.Spread 	= Vector( 0.01,  0.01, 0.01 )
-		bullet.Tracer	= 1
-		bullet.TracerName	= "lfs_aat_laser"
-		bullet.Force	= 100
-		bullet.HullSize 	= 5
-		bullet.Damage	= 250
-		bullet.Attacker 	= Driver
-		bullet.AmmoType = "Pistol"
-		bullet.Callback = function(att, tr, dmginfo)
-			dmginfo:SetDamageType(DMG_AIRBOAT)
+		local effectdata = EffectData()
+			effectdata:SetEntity( self )
+		util.Effect( "lfs_aat_muzzle", effectdata )
 
-			util.BlastDamage( self, Driver, tr.HitPos,100,150)
+		local ent = ents.Create( "lfs_aat_maingun_projectile" )
+		ent:SetPos( Muzzle.Pos )
+		ent:SetAngles( Muzzle.Ang:Up():Angle() )
+		ent:Spawn()
+		ent:Activate()
+		ent:SetAttacker( Driver )
+		ent:SetInflictor( self )
+
+		local PhysObj = self:GetPhysicsObject()
+		if IsValid( PhysObj ) then
+			PhysObj:ApplyForceOffset( -Muzzle.Ang:Up() * 20000, Muzzle.Pos )
 		end
-		self:FireBullets( bullet )
+	end
+
+	self:SetTurretHeat( self:GetTurretHeat() + 56 )
+
+	if self:GetTurretHeat() >= 120 then
+		self:SetNextAltPrimary( 6 )
+		self:EmitSound("lfs/aat/overheat.mp3")
 	end
 end
 

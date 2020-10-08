@@ -4,7 +4,7 @@ VertexLitGeneric
 	$bumpmap    "models/blu/aat/gun_nm"
 
 	$envmap "env_cubemap"	
-	$envmaptint "[.02 .02 .02]"
+	$envmaptint "[.01 .01 .01]"
 
 	$phong 			1
 	$phongexponent 		10

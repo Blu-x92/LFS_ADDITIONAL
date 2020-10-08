@@ -35,15 +35,15 @@ function EFFECT:Explosion( pos )
 	
 	if not emitter then return end
 
-	for i = 0, 20 do
+	for i = 0, 25 do
 		local particle = emitter:Add( "sprites/light_glow02_add", pos )
 		
-		local vel = VectorRand() * 400
+		local vel = VectorRand() * 450
 		
 		if particle then
 			particle:SetVelocity( vel )
 			particle:SetAngles( vel:Angle() + Angle(0,90,0) )
-			particle:SetDieTime( math.Rand(0.4,0.8) )
+			particle:SetDieTime( math.Rand(1,1.6) )
 			particle:SetStartAlpha( 255 )
 			particle:SetEndAlpha( 0 )
 			particle:SetStartSize( math.Rand(24,48) )

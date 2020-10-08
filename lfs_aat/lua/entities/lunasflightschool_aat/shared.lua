@@ -63,6 +63,7 @@ ENT.DontPushMePlease = true
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Bool",21, "WeaponOutOfRange" )
+	self:NetworkVar( "Float",21, "TurretHeat" )
 end
 
 
@@ -124,6 +125,6 @@ sound.Add( {
 	channel = CHAN_STATIC,
 	volume = 0.5,
 	level = 100,
-	pitch = 150,
+	pitch = 125,
 	sound = {"lfs/plane_preexp1.ogg","lfs/plane_preexp2.ogg","lfs/plane_preexp3.ogg"}
 } )

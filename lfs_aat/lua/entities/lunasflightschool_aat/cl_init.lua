@@ -99,7 +99,7 @@ function ENT:LFSHudPaintPassenger( X, Y, ply ) -- all except driver
 				endpos = (startpos + Muzzle.Ang:Up() * 50000),
 				mins = Vector( -10, -10, -10 ),
 				maxs = Vector( 10, 10, 10 ),
-				filter = function( ent ) if ent == self or ent:GetClass() == "lfs_aat_laser_projectile" then return false end return true end
+				filter = function( ent ) if ent == self or ent:GetClass() == "lfs_aat_maingun_projectile" then return false end return true end
 			} )
 			local HitPos = Trace.HitPos:ToScreen()
 
@@ -121,6 +121,27 @@ function ENT:LFSHudPaintPassenger( X, Y, ply ) -- all except driver
 			surface.DrawLine( X - 9, Y + 1, X - 16, Y + 1 ) 
 			surface.DrawLine( X + 1, Y + 11, X + 1, Y + 21 ) 
 			surface.DrawLine( X + 1, Y - 19, X + 1, Y - 16 ) 
+
+			local heat = (self:GetTurretHeat() / 100)
+			if heat > 0.01 then
+				local sX = 70
+				local sY = 6
+				X = X - sX * 0.5
+				Y = Y + 25
+
+				surface.SetDrawColor(0,0,0,255)
+				surface.DrawRect(X - 1, Y - 1, sX + 2, sY + 2)
+
+				surface.SetDrawColor(150,150,150,100)
+				surface.DrawRect(X, Y, sX, sY)
+
+				surface.SetDrawColor(255,255,255,255)
+				surface.DrawRect(X, Y, sX * math.min(heat,1), sY)
+				if heat > 1 then
+					surface.SetDrawColor(255,0,0,255)
+					surface.DrawRect(X + sX, Y, sX * math.min(heat - 1,1), sY)
+				end
+			end
 		end
 	end
 end
