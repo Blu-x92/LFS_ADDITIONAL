@@ -34,9 +34,11 @@ if SERVER then
 
 		local Vel = self:GetVelocity()
 
-		local trace = util.TraceLine( {
+		local trace = util.TraceHull( {
 			start = self:GetPos(),
 			endpos = self:GetPos() + Vel:GetNormalized() * (Vel:Length() * FrameTime() + 25),
+			mins = Vector(-5,-5,-5),
+			maxs = Vector(5,5,5),
 			filter = {self,self:GetInflictor(), self:GetRearEnt()}
 		} )
 
