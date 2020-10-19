@@ -55,44 +55,48 @@ function ENT:Initialize() -- overwriting initialize function is bad and a big no
 	
 	self:InitPod()
 
-	local ent = ents.Create( "gmod_atte_rear" )
-	ent:SetPos( self:GetPos() )
-	ent:SetAngles( self:GetAngles() )
-	ent:Spawn()
-	ent:Activate()
-	ent:DeleteOnRemove( self )
-	self:DeleteOnRemove( ent )
-	
-	self:dOwner( ent )
-	
-	ent.ATTEBaseEnt = self
-	ent.DoNotDuplicate = true
-	
-	local PObj = ent:GetPhysicsObject()
-	
-	if not IsValid( PObj ) then 
-		self:Remove()
+	timer.Simple(0, function() -- i dont know what they changed, but the last gmod update made this necessary
+		if not IsValid( self ) then return end
+
+		local ent = ents.Create( "gmod_atte_rear" )
+		ent:SetPos( self:GetPos() )
+		ent:SetAngles( self:GetAngles() )
+		ent:Spawn()
+		ent:Activate()
+		ent:DeleteOnRemove( self )
+		self:DeleteOnRemove( ent )
 		
-		print("LFS: missing model. Plane terminated.")
+		self:dOwner( ent )
 		
-		return
-	end
-	
-	self:SetRearEnt( ent )
-	
-	PObj:SetMass( self.Mass ) 
+		ent.ATTEBaseEnt = self
+		ent.DoNotDuplicate = true
+		
+		local PObj = ent:GetPhysicsObject()
+		
+		if not IsValid( PObj ) then 
+			self:Remove()
+			
+			print("LFS: missing model. Plane terminated.")
+			
+			return
+		end
+		
+		self:SetRearEnt( ent )
+		
+		PObj:SetMass( self.Mass ) 
 
-	local Friction = FrameTime() > (1 / 15) and 5 or 0
+		local Friction = FrameTime() > (1 / 15) and 5 or 0
 
-	local ballsocket = constraint.AdvBallsocket(ent, self,0,0,Vector(35,0,128),Vector(35,0,128),0,0, -20, -20, -20, 20, 20, 20, Friction, Friction, Friction, 0, 1)
-	self:dOwner( ballsocket )
-	ballsocket.DoNotDuplicate = true
+		local ballsocket = constraint.AdvBallsocket(ent, self,0,0,Vector(35,0,128),Vector(35,0,128),0,0, -20, -20, -20, 20, 20, 20, Friction, Friction, Friction, 0, 1)
+		self:dOwner( ballsocket )
+		ballsocket.DoNotDuplicate = true
 
-	ballsocket:DeleteOnRemove( self )
-	ballsocket:DeleteOnRemove( ent )
-	
-	self:RunOnSpawn()
-	self:InitWheels() -- im too lazy to call unfreeze and wake so i will just let initwheels do the job
+		ballsocket:DeleteOnRemove( self )
+		ballsocket:DeleteOnRemove( ent )
+		
+		self:RunOnSpawn()
+		self:InitWheels() -- im too lazy to call unfreeze and wake so i will just let initwheels do the job
+	end)
 end
 
 function ENT:RunOnSpawn()
