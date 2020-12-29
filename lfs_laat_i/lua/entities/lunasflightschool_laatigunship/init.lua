@@ -144,7 +144,7 @@ function ENT:SecondaryAttack()
 	
 	self:SetNextSecondary( 0.6 )
 	
-	self:TakeSecondaryAmmo(2)
+	self:TakeSecondaryAmmo()
 	
 	local startpos = self:GetRotorPos()
 	local tr = util.TraceHull( {
@@ -158,36 +158,38 @@ function ENT:SecondaryAttack()
 		end
 	} )
 	local AltLauncherType = self:GetBodygroup( 3 ) == 0
-	
-	for i = -1,1,2 do
-		local ent = ents.Create( "lunasflightschool_missile" )
-		local Pos = self:LocalToWorld( Vector((AltLauncherType and -20 or 206.07) ,59 * i,286.88) )
-		ent:SetPos( Pos )
-		ent:SetAngles( (tr.HitPos - Pos):Angle() )
-		ent:Spawn()
-		ent:Activate()
-		ent:SetAttacker( self:GetDriver() )
-		ent:SetInflictor( self )
-		ent:SetStartVelocity( self:GetVelocity():Length() )
 
-		if tr.Hit then
-			local Target = tr.Entity
-			if IsValid( Target ) then
-				if Target:GetClass():lower() ~= "lunasflightschool_missile" then
-					ent:SetLockOn( Target )
-					ent:SetStartVelocity( 0 )
-				end
+	self.MirrorSec = not self.MirrorSec
+
+	local i = self.MirrorSec and -1 or 1
+
+	local ent = ents.Create( "lunasflightschool_missile" )
+	local Pos = self:LocalToWorld( Vector((AltLauncherType and -20 or 206.07) ,59 * i,286.88) )
+	ent:SetPos( Pos )
+	ent:SetAngles( (tr.HitPos - Pos):Angle() )
+	ent:Spawn()
+	ent:Activate()
+	ent:SetAttacker( self:GetDriver() )
+	ent:SetInflictor( self )
+	ent:SetStartVelocity( self:GetVelocity():Length() )
+
+	if tr.Hit then
+		local Target = tr.Entity
+		if IsValid( Target ) then
+			if Target:GetClass():lower() ~= "lunasflightschool_missile" then
+				ent:SetLockOn( Target )
+				ent:SetStartVelocity( 0 )
 			end
 		end
-		
-		if AltLauncherType then
-			ent:SetCleanMissile( true )
-		else
-			ent:SetDirtyMissile( true )
-		end
-		
-		constraint.NoCollide( ent, self, 0, 0 ) 
 	end
+	
+	if AltLauncherType then
+		ent:SetCleanMissile( true )
+	else
+		ent:SetDirtyMissile( true )
+	end
+	
+	constraint.NoCollide( ent, self, 0, 0 ) 
 end
 
 function ENT:SetNextAltPrimary( delay )
@@ -347,6 +349,16 @@ function ENT:OnLandingGearToggled( bOn )
 				self:EmitSound( "lfs/laat/door_large_close.wav" )
 				self:SetDoorMode( 0 )
 			end
+		end
+	end
+
+	if self:GetDoorMode() == 0 and not self:GetRearHatch() then
+		if not self:GetlfsLockedStatus() then
+			self:SetlfsLockedStatus( true )
+		end
+	else
+		if self:GetlfsLockedStatus() then
+			self:SetlfsLockedStatus( false )
 		end
 	end
 end

@@ -12,10 +12,10 @@
 ENT.Type            = "anim"
 DEFINE_BASECLASS( "lunasflightschool_basescript" )
 
-ENT.PrintName = "LAAT/c (ATTE)"
-ENT.Author = "Blu"
-ENT.Information = ""
-ENT.Category = "[LFS]"
+ENT.PrintName = "ATTE"
+ENT.Author = "Luna"
+ENT.Information = "Assault Walker of the Galactic Republic"
+ENT.Category = "[LFS] - Star Wars Pack"
 
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
@@ -48,6 +48,9 @@ ENT.SeatPos = Vector(218,0,148)
 ENT.SeatAng = Angle(0,-90,0)
 
 ENT.MaxHealth = 12000
+
+ENT.MaintenanceTime = 20
+ENT.MaintenanceRepairAmount = 1000
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Entity",22, "RearEnt" )

@@ -12,10 +12,10 @@
 ENT.Type            = "anim"
 DEFINE_BASECLASS( "lunasflightschool_basescript_gunship" )
 
-ENT.PrintName = "LAAT/c (IFT-X)"
-ENT.Author = "Blu"
-ENT.Information = ""
-ENT.Category = "[LFS]"
+ENT.PrintName = "IFT-X"
+ENT.Author = "Luna"
+ENT.Information = "Hover Tank of the Galactic Republic"
+ENT.Category = "[LFS] - Star Wars Pack"
 
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false
@@ -64,6 +64,9 @@ ENT.DontPushMePlease = true
 ENT.LAATC_PICKUPABLE = true
 ENT.LAATC_PICKUP_POS = Vector(-200,0,25)
 ENT.LAATC_PICKUP_Angle = Angle(0,0,0)
+
+ENT.MaintenanceTime = 20
+ENT.MaintenanceRepairAmount = 750
 
 function ENT:AddDataTables()
 	self:NetworkVar( "Bool",19, "BTLFire" )

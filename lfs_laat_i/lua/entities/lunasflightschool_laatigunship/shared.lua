@@ -4,9 +4,9 @@ ENT.Type            = "anim"
 DEFINE_BASECLASS( "lunasflightschool_basescript_gunship" )
 
 ENT.PrintName = "LAAT/i"
-ENT.Author = "Blu"
-ENT.Information = ""
-ENT.Category = "[LFS]"
+ENT.Author = "Luna"
+ENT.Information = "Gunship/Troop Transport of the Galactic Republic"
+ENT.Category = "[LFS] - Star Wars Pack"
 
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= false

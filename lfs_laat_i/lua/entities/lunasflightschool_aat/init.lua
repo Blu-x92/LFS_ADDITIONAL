@@ -52,7 +52,7 @@ function ENT:PrimaryAttack()
 	bullet.TracerName	= "lfs_laser_red"
 	bullet.Force	= 100
 	bullet.HullSize 	= 2
-	bullet.Damage	= 80
+	bullet.Damage	= 30
 	bullet.Attacker 	= self:GetDriver()
 	bullet.AmmoType = "Pistol"
 	bullet.Callback = function(att, tr, dmginfo)
@@ -221,6 +221,16 @@ end
 function ENT:OnLandingGearToggled( bOn )
 end
 
+function ENT:OnStartMaintenance()
+	if not self:GetRepairMode() and not self:GetAmmoMode() then return end
+
+	self.IsReloading = true
+end
+
+function ENT:OnStopMaintenance()
+	self.IsReloading = nil
+end
+
 function ENT:OnTick()
 	if self:GetAI() then self:SetAI( false ) end
 
@@ -273,6 +283,15 @@ function ENT:OnTick()
 			end
 		else
 			self.StoredEyeAngles = EyeAngles
+		end
+
+		local KeyReload = Driver:lfsGetInput( "ENGINE" )
+		if self.OldKeyReload ~= KeyReload then
+			self.OldKeyReload = KeyReload
+
+			if KeyReload and not self.IsReloading then
+				self:StartMaintenance()
+			end
 		end
 	else
 		EyeAngles = self:GetAngles()

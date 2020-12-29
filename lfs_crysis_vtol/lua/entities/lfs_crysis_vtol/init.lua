@@ -27,6 +27,18 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 	return ent
 end
 
+function ENT:OnReloadWeapon()
+	self:SetAmmoTertiary( self.MaxTertiaryAmmo )
+
+	self:EmitSound("lfs/weapons_reload.wav")
+end
+
+function ENT:OnUnloadWeapon()
+	self:SetAmmoTertiary( 0 )
+
+	self:EmitSound("weapons/357/357_reload4.wav")
+end
+
 function ENT:SetNextAltPrimary( delay )
 	self.NextAltPrimary = CurTime() + delay
 end

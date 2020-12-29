@@ -8,7 +8,6 @@ function ENT:SetupDataTables()
 	self:NetworkVar( "Entity",0, "Attacker" )
 	self:NetworkVar( "Entity",1, "Inflictor" )
 	self:NetworkVar( "Entity",2, "RearEnt" )
-	self:NetworkVar( "Float",0, "StartVelocity" )
 end
 
 if SERVER then
@@ -29,7 +28,7 @@ if SERVER then
 		local pObj = self:GetPhysicsObject()
 		
 		if IsValid( pObj ) then
-			pObj:SetVelocityInstantaneous( self:GetForward() * (self:GetStartVelocity() + 3000) )
+			pObj:SetVelocityInstantaneous( self:GetForward() * 6000 )
 		end
 
 		local Vel = self:GetVelocity()
@@ -46,6 +45,7 @@ if SERVER then
 			self:SetPos( trace.HitPos )
 			self:ProjDetonate()
 			self:simfphysDamage( trace.Entity )
+			self:LFSDamage( trace.Entity )
 		end
 	end
 
@@ -128,6 +128,29 @@ if SERVER then
 			
 			sound.Play( "Missile.ShotDown", Pos, 140)
 		end
+	end
+
+	function ENT:LFSDamage( HitEnt )
+		if not IsValid( HitEnt ) then return end
+
+		if not HitEnt.LFS and not HitEnt.IdentifiesAsLFS then return end
+
+		local Pos = self:GetPos()
+
+		local effectdata = EffectData()
+			effectdata:SetOrigin( Pos )
+			effectdata:SetNormal( -self:GetForward() )
+		util.Effect( "manhacksparks", effectdata, true, true )
+
+		local dmginfo = DamageInfo()
+			dmginfo:SetDamage( 500 )
+			dmginfo:SetAttacker( IsValid( self:GetAttacker() ) and self:GetAttacker() or self )
+			dmginfo:SetDamageType( DMG_DIRECT )
+			dmginfo:SetInflictor( self ) 
+			dmginfo:SetDamagePosition( Pos ) 
+		HitEnt:TakeDamageInfo( dmginfo )
+
+		sound.Play( "Missile.ShotDown", Pos, 140)
 	end
 
 	function ENT:PhysicsCollide( data )

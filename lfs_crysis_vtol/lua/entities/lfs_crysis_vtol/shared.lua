@@ -15,7 +15,7 @@ DEFINE_BASECLASS( "lunasflightschool_basescript" )
 
 ENT.PrintName = "MV-24 VTOL"
 ENT.Author = "Luna"
-ENT.Information = ""
+ENT.Information = "VTOL from the game Crysis"
 ENT.Category = "[LFS]"
 
 ENT.Spawnable		= true
@@ -73,9 +73,7 @@ ENT.MaxTertiaryAmmo = 1200
 function ENT:AddDataTables()
 	self:NetworkVar( "Bool",11, "IsGroundTouching" )
 	self:NetworkVar( "Bool",12, "ForceOpenDoor" )
-	self:NetworkVar( "Int",11, "AmmoTertiary", { KeyName = "tertiaryammo", Edit = { type = "Int", order = 5,min = 0, max = self.MaxTertiaryAmmo, category = "Weapons"} } )
-	
-	self:SetAmmoTertiary( self.MaxTertiaryAmmo )
+	self:NetworkVar( "Int",11, "AmmoTertiary" )
 end
 
 sound.Add( {

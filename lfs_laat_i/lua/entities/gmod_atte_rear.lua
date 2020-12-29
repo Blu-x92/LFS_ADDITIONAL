@@ -14,9 +14,11 @@ AddCSLuaFile()
 ENT.Type            = "anim"
 
 ENT.PrintName = "ATTE"
-ENT.Author = "Blu"
+ENT.Author = "Luna"
 ENT.AutomaticFrameAdvance = true
 ENT.DoNotDuplicate = true
+
+ENT.IdentifiesAsLFS = true
 
 if SERVER then
 	function ENT:Initialize()	

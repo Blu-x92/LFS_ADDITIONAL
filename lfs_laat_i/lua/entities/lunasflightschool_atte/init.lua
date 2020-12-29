@@ -357,6 +357,16 @@ function ENT:OnIsCarried( name, old, new)
 	end
 end
 
+function ENT:OnStartMaintenance()
+	if not self:GetRepairMode() and not self:GetAmmoMode() then return end
+
+	self.IsReloading = true
+end
+
+function ENT:OnStopMaintenance()
+	self.IsReloading = nil
+end
+
 function ENT:OnTick()
 
 	if self:GetAI() then self:SetAI( false ) end
@@ -394,8 +404,6 @@ function ENT:OnTick()
 
 		return
 	end
-
-	if not self:GetEngineActive() then self:SetEngineActive( true ) end
 
 	local Pod = self:GetDriverSeat()
 	if not IsValid( Pod ) then return end
@@ -439,6 +447,15 @@ function ENT:OnTick()
 		Sprint = Driver:lfsGetInput( "VSPEC" ) or Driver:lfsGetInput( "+PITCH" ) or Driver:lfsGetInput( "-PITCH" )
 		
 		self:MainGunPoser( Pod:WorldToLocalAngles( EyeAngles ) )
+
+		local KeyReload = Driver:lfsGetInput( "ENGINE" )
+		if self.OldKeyReload ~= KeyReload then
+			self.OldKeyReload = KeyReload
+
+			if KeyReload and not self.IsReloading then
+				self:StartMaintenance()
+			end
+		end
 	end
 	local MoveSpeed = Sprint and 250 or 150
 	self.smSpeed = self.smSpeed and self.smSpeed + ((KeyForward and MoveSpeed or 0) - (KeyBack and MoveSpeed or 0) - self.smSpeed) * FTtoTick * 0.05 or 0
@@ -628,6 +645,26 @@ function ENT:OnTick()
 	self:SetTurretHeat( math.max(self:GetTurretHeat() - 30 * FrameTime(),0) )
 end
 
+function ENT:IsEngineStartAllowed() -- always allow it to be turned on
+	return true
+end
+
+function ENT:HandleStart() -- autostart 
+	local Driver = self:GetDriver()
+	
+	local Active = (IsValid( Driver ) or self:GetAI()) and not self:GetIsCarried()
+
+	if Active then
+		if not self:GetEngineActive() then
+			self:StartEngine()
+		end
+	else
+		if self:GetEngineActive() then
+			self:StopEngine()
+		end
+	end
+end
+
 function ENT:Turret( Driver, Pod )
 	if not IsValid( Pod ) or not IsValid( Driver ) then 
 		return
@@ -702,7 +739,6 @@ function ENT:FireTurret()
 		ent:SetAttacker( self:GetTurretDriver() )
 		ent:SetInflictor( self )
 		ent:SetRearEnt( self:GetRearEnt() )
-		ent:SetStartVelocity( 10000 )
 		
 		constraint.NoCollide( ent, self, 0, 0 ) 
 		
@@ -1000,7 +1036,9 @@ end
 
 function ENT:OnTakeDamage( dmginfo )
 	self:TakePhysicsDamage( dmginfo )
-	
+
+	self:StopMaintenance()
+
 	local Damage = dmginfo:GetDamage()
 	local CurHealth = self:GetHP()
 	local NewHealth = math.Clamp( CurHealth - Damage , -self:GetMaxHP(), self:GetMaxHP() )
@@ -1017,11 +1055,12 @@ function ENT:OnTakeDamage( dmginfo )
 
 			local effectdata = EffectData()
 				effectdata:SetOrigin( dmginfo:GetDamagePosition() )
+				effectdata:SetEntity( self )
 			util.Effect( "lfs_shield_deflect", effectdata )
 
 			self:TakeShieldDamage( Damage )
 		else
-			sound.Play( Sound( "weapons/fx/rics/ric"..math.random(1,5)..".wav" ), dmgPos, SNDLVL_70dB)
+			sound.Play( Sound( table.Random( {"physics/metal/metal_sheet_impact_bullet2.wav","physics/metal/metal_sheet_impact_hard2.wav","physics/metal/metal_sheet_impact_hard6.wav",} ) ), dmgPos, SNDLVL_70dB)
 	
 			local effectdata = EffectData()
 				effectdata:SetOrigin( dmgPos )
