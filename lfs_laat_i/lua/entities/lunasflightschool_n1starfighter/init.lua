@@ -6,6 +6,10 @@ include("shared.lua")
 
 
 function ENT:RunOnSpawn()
+	if FrameTime() > 0.067 then
+		self.ElevatorPos = Vector(-200,0,54.62)
+		self.RudderPos = Vector(-200,0,54.62)
+	end
 end
 
 function ENT:PrimaryAttack()
