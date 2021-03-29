@@ -5,11 +5,13 @@
 -- DO NOT EDIT OR REUPLOAD THIS FILE
 -- DO NOT EDIT OR REUPLOAD THIS FILE
 -- DO NOT EDIT OR REUPLOAD THIS FILE
-
--- IM GETTING SICK OF PEOPLE STEALING CODE SNIPPETS OF HEAVILY CUSTOMIZED VEHICLES AND THEN WONDER WHY THEIR SHIT ACTS WIERD
-
--- YOU SHOULD USE THE TEMPLATE AS STARTING POINT AND ONLY COPY CODE THAT YOU REALLY NEED IF AT ALL
-
+-- DO NOT EDIT OR REUPLOAD THIS FILE
+-- DO NOT EDIT OR REUPLOAD THIS FILE
+-- DO NOT EDIT OR REUPLOAD THIS FILE
+-- DO NOT EDIT OR REUPLOAD THIS FILE
+-- DO NOT EDIT OR REUPLOAD THIS FILE
+-- DO NOT EDIT OR REUPLOAD THIS FILE
+-- DO NOT EDIT OR REUPLOAD THIS FILE
 
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "cl_init.lua" )
@@ -20,7 +22,7 @@ function ENT:SpawnFunction( ply, tr, ClassName )
 
 	local ent = ents.Create( ClassName )
 	ent.dOwnerEntLFS = ply
-	ent:SetPos( tr.HitPos + tr.HitNormal * 150 )
+	ent:SetPos( tr.HitPos + tr.HitNormal * 350 )
 	ent:Spawn()
 	ent:Activate()
 
@@ -279,9 +281,11 @@ function ENT:OnVtolMode( On )
 	if On then
 		self:EmitSound( "lfs/crysis_vtol/vtol_off.wav" )
 		self:DeployLandingGear()
+		self.MaxTurnRoll = 450
 	else
 		self:EmitSound( "lfs/crysis_vtol/vtol_on.wav" )
 		self:RaiseLandingGear()
+		self.MaxTurnRoll = 300
 	end
 end
 
